@@ -1,0 +1,302 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+
+  --font-sans: var(--app-font-sans);
+  --font-headline: var(--app-font-headline);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 8px);
+  --radius-full: 9999px;
+}
+
+/* ================================================================
+   BASE THEME — "Academic Prism" Light Mode
+   ================================================================ */
+:root {
+  /* Surface hierarchy */
+  --background: 237 100% 98%;        /* #F4F6FF */
+  --foreground: 213 36% 19%;         /* #212F43 */
+  --border: 215 22% 83%;             /* #A0AEC6 @ 60% */
+  --input: 237 100% 96%;
+  --ring: var(--primary);
+
+  --card: 0 0% 100%;                 /* #FFFFFF surface-container-lowest */
+  --card-foreground: 213 36% 19%;
+  --card-border: 215 22% 90%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 213 36% 19%;
+
+  /* Primary: dynamically overridden by grade theme below */
+  --primary: 214 100% 37%;           /* #0057bd default/admin */
+  --primary-foreground: 235 100% 97%;
+
+  --secondary: 228 100% 96%;         /* #EBF1FF */
+  --secondary-foreground: 213 36% 19%;
+
+  --muted: 222 100% 93%;             /* #DDE9FF */
+  --muted-foreground: 213 18% 37%;   /* #4E5C71 */
+
+  --accent: 222 100% 95%;
+  --accent-foreground: 213 36% 19%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* Sidebar = surface-container-low */
+  --sidebar: 228 100% 96%;           /* #EBF1FF */
+  --sidebar-foreground: 213 36% 19%;
+  --sidebar-border: 215 22% 90%;
+  --sidebar-accent: 222 100% 92%;
+  --sidebar-accent-foreground: 213 36% 19%;
+
+  --app-font-sans: 'Manrope', 'IBM Plex Sans Arabic', sans-serif;
+  --app-font-headline: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', sans-serif;
+  --radius: 0.75rem;
+
+  --shadow-sm: 0 1px 3px 0 rgba(33, 47, 67, 0.06);
+  --shadow-md: 0 4px 12px -2px rgba(33, 47, 67, 0.08);
+  --shadow-lg: 0 20px 40px -12px rgba(33, 47, 67, 0.10);
+}
+
+/* ================================================================
+   GRADE DYNAMIC THEMES — set on html[data-grade]
+   ================================================================ */
+
+html[data-grade="grade9"] {
+  --primary: 43 96% 56%;             /* #FBBF24 */
+  --primary-foreground: 27 100% 16%; /* #451a03 */
+  --background: 48 100% 99%;         /* #FFFDF5 */
+  --sidebar: 48 100% 97%;            /* #fffbeb */
+  --sidebar-accent: 48 100% 94%;
+  --muted: 43 87% 94%;
+  --ring: 43 96% 56%;
+}
+
+html[data-grade="grade12_sci"] {
+  --primary: 0 84% 60%;              /* #EF4444 light red */
+  --primary-foreground: 0 0% 100%;
+  --background: 0 100% 98%;
+  --sidebar: 0 86% 97%;
+  --sidebar-accent: 0 86% 94%;
+  --muted: 0 86% 93%;
+  --ring: 0 84% 60%;
+}
+
+html[data-grade="grade12_lit"] {
+  --primary: 4 93% 66%;              /* #F97066 coral */
+  --primary-foreground: 0 0% 100%;
+  --background: 4 100% 98%;
+  --sidebar: 4 100% 97%;
+  --sidebar-accent: 4 100% 93%;
+  --muted: 4 90% 93%;
+  --ring: 4 93% 66%;
+}
+
+html[data-grade="baccalaureate"] {
+  --primary: 0 84% 60%;
+  --primary-foreground: 0 0% 100%;
+  --background: 237 100% 98%;
+  --sidebar: 0 86% 97%;
+  --sidebar-accent: 0 86% 94%;
+  --muted: 0 86% 93%;
+  --ring: 0 84% 60%;
+}
+
+html[data-grade="outcomes"] {
+  --primary: 217 89% 61%;            /* #4285F4 */
+  --primary-foreground: 0 0% 100%;
+  --background: 237 100% 98%;
+  --sidebar: 228 100% 96%;
+  --sidebar-accent: 228 100% 92%;
+  --muted: 222 100% 93%;
+  --ring: 217 89% 61%;
+}
+
+html[data-grade="steps1000"] {
+  --primary: 142 71% 45%;            /* #22C55E light green */
+  --primary-foreground: 0 0% 100%;
+  --background: 144 100% 97%;
+  --sidebar: 144 100% 96%;
+  --sidebar-accent: 144 100% 92%;
+  --muted: 144 80% 90%;
+  --ring: 142 71% 45%;
+}
+
+html[data-grade="ielts"] {
+  --primary: 271 81% 56%;            /* #9333EA */
+  --primary-foreground: 0 0% 100%;
+  --background: 248 100% 99%;        /* #f8f7ff */
+  --sidebar: 250 100% 98%;           /* #f5f3ff */
+  --sidebar-accent: 271 60% 94%;
+  --muted: 271 60% 92%;
+  --ring: 271 81% 56%;
+}
+
+/* ================================================================
+   BASE STYLES
+   ================================================================ */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    font-family: 'Manrope', 'IBM Plex Sans Arabic', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    direction: rtl;
+  }
+  h1, h2, h3 {
+    font-family: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', sans-serif;
+  }
+}
+
+/* ================================================================
+   UTILITIES
+   ================================================================ */
+@layer utilities {
+  /* Glassmorphism nav */
+  .glass-nav {
+    background: rgba(244, 246, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  html[data-grade="grade9"] .glass-nav {
+    background: rgba(255, 253, 245, 0.75);
+  }
+  html[data-grade="steps1000"] .glass-nav {
+    background: rgba(240, 253, 244, 0.75);
+  }
+  html[data-grade="ielts"] .glass-nav {
+    background: rgba(248, 247, 255, 0.75);
+  }
+
+  /* Academic prism gradient */
+  .prism-gradient {
+    background: linear-gradient(155deg, rgba(var(--primary-rgb, 0,87,189), 0.06) 0%, hsl(var(--background)) 100%);
+  }
+
+  /* Tonal ambient shadow */
+  .shadow-tonal {
+    box-shadow: 0 20px 40px -12px rgba(33, 47, 67, 0.10), 0 4px 8px -4px rgba(33, 47, 67, 0.06);
+  }
+  .shadow-tonal-sm {
+    box-shadow: 0 4px 16px -2px rgba(33, 47, 67, 0.08), 0 1px 4px -1px rgba(33, 47, 67, 0.05);
+  }
+
+  /* 3D Card effect */
+  .card-3d {
+    box-shadow: 0 4px 16px -2px rgba(33, 47, 67, 0.08), 0 1px 4px -1px rgba(33, 47, 67, 0.05);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .card-3d:hover {
+    box-shadow: 0 12px 32px -6px rgba(33, 47, 67, 0.14), 0 4px 12px -4px rgba(33, 47, 67, 0.08);
+    transform: translateY(-3px);
+  }
+
+  /* Hover lift */
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px -8px rgba(33, 47, 67, 0.15);
+  }
+
+  /* Stars glow */
+  .star-glow {
+    filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.7));
+  }
+
+  /* RTL utilities */
+  .ltr { direction: ltr; }
+
+  /* Grade badges */
+  .grade-badge-grade9    { background: #FEF3C7; color: #92400E; }
+  .grade-badge-baccalaureate { background: #FEE2E2; color: #991B1B; }
+  .grade-badge-outcomes  { background: #DBEAFE; color: #1E40AF; }
+  .grade-badge-steps1000 { background: #D1FAE5; color: #065F46; }
+  .grade-badge-ielts     { background: #EDE9FE; color: #5B21B6; }
+
+  /* Metallic leaderboard gradients */
+  .rank-gold   { background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #D97706 100%); }
+  .rank-silver { background: linear-gradient(135deg, #E5E7EB 0%, #9CA3AF 50%, #6B7280 100%); }
+  .rank-bronze { background: linear-gradient(135deg, #FED7AA 0%, #F97316 50%, #EA580C 100%); }
+
+  .animate-star-pulse {
+    animation: starPulse 2.5s ease-in-out infinite;
+  }
+  @keyframes starPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.85; }
+  }
+  .animate-pulse-dot {
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .tiptap-content h2 { font-size: 1.125rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem; }
+  .tiptap-content h3 { font-size: 1rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.375rem; }
+  .tiptap-content p { margin-bottom: 0.5rem; line-height: 1.7; }
+  .tiptap-content ul { list-style-type: disc; padding-right: 1.25rem; margin-bottom: 0.5rem; }
+  .tiptap-content ol { list-style-type: decimal; padding-right: 1.25rem; margin-bottom: 0.5rem; }
+  .tiptap-content li { margin-bottom: 0.25rem; }
+  .tiptap-content strong { font-weight: 700; }
+  .tiptap-content em { font-style: italic; }
+  .tiptap-content a { color: #3b82f6; text-decoration: underline; }
+  .tiptap-content hr { border: none; border-top: 1px solid rgba(160,174,198,0.2); margin: 1rem 0; }
+  .tiptap-content[dir="ltr"] ul { padding-left: 1.25rem; padding-right: 0; }
+  .tiptap-content[dir="ltr"] ol { padding-left: 1.25rem; padding-right: 0; }
+
+  .ProseMirror { outline: none; }
+  .ProseMirror ul { list-style-type: disc; padding-right: 1.25rem; }
+  .ProseMirror ol { list-style-type: decimal; padding-right: 1.25rem; }
+  .ProseMirror h2 { font-size: 1.125rem; font-weight: 700; margin-top: 0.75rem; margin-bottom: 0.375rem; }
+  .ProseMirror h3 { font-size: 1rem; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.25rem; }
+  .ProseMirror p { margin-bottom: 0.375rem; }
+  .ProseMirror strong { font-weight: 700; }
+  .ProseMirror em { font-style: italic; }
+  .ProseMirror hr { border: none; border-top: 1px solid rgba(160,174,198,0.2); margin: 0.75rem 0; }
+}

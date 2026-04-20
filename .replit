@@ -1,0 +1,62 @@
+modules = ["nodejs-24", "postgresql-16"]
+
+[[artifacts]]
+id = "artifacts/api-server"
+
+[[artifacts]]
+id = "artifacts/mockup-sandbox"
+
+[deployment]
+router = "application"
+deploymentTarget = "autoscale"
+build = ["sh", "-c", "npm run build"]
+run = ["sh", "-c", "npm run start"]
+
+[deployment.postBuild]
+args = ["pnpm", "store", "prune"]
+env = { "CI" = "true" }
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "PORT=8080 pnpm --filter @workspace/api-server run dev & PORT=25486 BASE_PATH=/ pnpm --filter @workspace/najm-edu run dev"
+waitForPort = 25486
+
+[agent]
+stack = "PNPM_WORKSPACE"
+expertMode = true
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
+
+[userenv]
+
+[userenv.shared]
+JWT_SECRET = "najm_edu_jwt_secret_2024_secure_key_x8f3k9p2m7"
+VAPID_PUBLIC_KEY = "BCT_O9-hEkRdJ_wWSV3SiS13GJAhiel2RlzrU9wxy8KGyMk-h-thkEzzefC-WDQT8q0GgRdL_bOzyAodMHxN2Ns"
+VAPID_PRIVATE_KEY = "N5aSlH5pc0qUlHjeh757R383GCWyO-E_SYPb_-w8eR8"
+VAPID_EMAIL = "mailto:abdullahnjm2024@gmail.com"
+WEBHOOK_SECRET = "861f70d3e1cac7a1ad731a6b09c7a51bf4ea5d4607396aed171bca7bac05186b"
+WEBHOOK_SECRET_FALLBACK = "najm_secure_2026"
+
+[nix]
+channel = "stable-25_05"

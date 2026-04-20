@@ -1,0 +1,58 @@
+Act as an expert Full-Stack Web Developer. I want you to build a comprehensive, bilingual (Arabic & English with full RTL support) educational web platform called "Najm Educational System" (نظام نجم التعليمي).
+
+This platform will replace Telegram/WhatsApp groups and serve as a centralized hub for my English language students. Please use a modern stack (e.g., React, Node.js, Express, PostgreSQL, Tailwind CSS).
+
+Here are the core requirements, features, and database structure:
+
+1. Branding & Themed Sections:
+The website must have a modern, clean UI with 5 main sections, each strictly adhering to its specific primary color theme:
+
+9th Grade: Yellow theme.
+
+12th Grade (Baccalaureate): Red theme.
+
+General English (Outcomes): Blue theme.
+
+1000 Steps Project: Green theme.
+
+IELTS Preparation: Purple theme.
+
+2. Authentication & User Roles:
+
+Implement custom email/password authentication (JWT).
+
+Users Table: Should include Student ID (Unique), Full Name, Email, Grade Level (one of the 5 sections above), Access Role (Free or Paid), and Stars Balance (Integer, default 0).
+
+Please seed a Super Admin account immediately: Email: abdullahnjm2024@gmail.com / Password: abdullahnjm2002.
+
+3. Content Permissions:
+
+Free Students: Can only access basic vocabulary, smart repetition tools, and free quizzes.
+
+Paid Students: Can access embedded unlisted YouTube video lessons and embedded Google Forms exams.
+
+4. Student Dashboard & Gamification:
+
+Dynamic UI: Upon login, the dashboard should adapt its colors and content based on the student's selected Grade Level.
+
+Video Player: Use iframes to embed unlisted YouTube videos seamlessly.
+
+Exam Viewer: Use iframes to embed Google Forms so students can take exams directly inside the website.
+
+Global Leaderboard: A dedicated page showing the ranking of ALL students based on their Stars Balance in descending order. It must show the student's exact rank (e.g., "Rank: 45 / 200").
+
+5. Admin Panel (For Teachers):
+
+A secure dashboard accessible only by the Admin.
+
+User Management: Search for students by Student ID, edit their Stars Balance manually, and toggle their Access Role (Free/Paid) with a single click.
+
+Content Management: A form to add new lessons and exams by pasting YouTube URLs and Google Form URLs, assigning them to a specific Grade Level.
+
+6. Automations (Webhook & Push Notifications):
+
+Google Forms Webhook (/api/webhook/exam-submission): Build a backend endpoint to receive scores from Google Forms. Crucial Logic: The system must check the student's previous attempts for the same exam ID. It should ONLY update the Stars Balance if the new score is strictly higher than their previous best score (Best-score logic).
+
+Web Push Notifications: Implement browser push notifications so the admin can send real-time alerts to students (e.g., "New lesson added!") even if they are not actively on the tab.
+
+Please build the database schema first, then proceed to build the backend logic and the frontend components. Make sure the Arabic RTL layout looks perfect.

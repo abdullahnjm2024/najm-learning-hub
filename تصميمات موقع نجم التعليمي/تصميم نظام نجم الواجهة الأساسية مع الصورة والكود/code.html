@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-error-container": "#570008",
+                        "tertiary-fixed": "#bda2ff",
+                        "on-secondary-container": "#005a3c",
+                        "tertiary-fixed-dim": "#b091ff",
+                        "secondary-fixed-dim": "#58e7ab",
+                        "tertiary-container": "#bda2ff",
+                        "outline": "#69788e",
+                        "primary-container": "#6e9fff",
+                        "background": "#f4f6ff",
+                        "on-primary": "#f0f2ff",
+                        "surface-tint": "#0057bd",
+                        "secondary-dim": "#005c3d",
+                        "on-secondary-fixed-variant": "#006544",
+                        "surface-bright": "#f4f6ff",
+                        "on-primary-fixed-variant": "#002a62",
+                        "inverse-surface": "#010f21",
+                        "on-secondary": "#c8ffe0",
+                        "tertiary-dim": "#5e26c7",
+                        "error": "#b31b25",
+                        "on-background": "#212f43",
+                        "on-tertiary-container": "#3c0091",
+                        "on-surface": "#212f43",
+                        "primary-fixed-dim": "#5391ff",
+                        "surface-container-high": "#d3e3ff",
+                        "surface-container-low": "#ebf1ff",
+                        "error-dim": "#9f0519",
+                        "secondary-container": "#69f6b8",
+                        "on-primary-fixed": "#000000",
+                        "secondary": "#006947",
+                        "outline-variant": "#a0aec6",
+                        "primary-fixed": "#6e9fff",
+                        "on-secondary-fixed": "#00452d",
+                        "tertiary": "#6a37d4",
+                        "on-surface-variant": "#4e5c71",
+                        "inverse-on-surface": "#8f9eb5",
+                        "surface-container-highest": "#cadeff",
+                        "surface-dim": "#bfd6fa",
+                        "on-tertiary-fixed-variant": "#4600a8",
+                        "on-error": "#ffefee",
+                        "on-tertiary": "#f8f0ff",
+                        "surface": "#f4f6ff",
+                        "surface-variant": "#cadeff",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#69f6b8",
+                        "primary": "#0057bd",
+                        "surface-container": "#dde9ff",
+                        "on-primary-container": "#002150",
+                        "on-tertiary-fixed": "#1f0052",
+                        "primary-dim": "#004ca6",
+                        "error-container": "#fb5151",
+                        "inverse-primary": "#4d8eff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "1rem",
+                        "xl": "1.25rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans", "IBM Plex Sans Arabic"],
+                        "body": ["Manrope", "IBM Plex Sans Arabic"],
+                        "label": ["Manrope", "IBM Plex Sans Arabic"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-nav {
+            background: rgba(244, 246, 255, 0.7);
+            backdrop-filter: blur(12px);
+        }
+        .academic-prism-gradient {
+            background: linear-gradient(155deg, rgba(0, 87, 189, 0.05) 0%, rgba(244, 246, 255, 1) 100%);
+        }
+        .rtl { direction: rtl; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full flex flex-row-reverse justify-between items-center px-8 py-4 z-50 glass-nav shadow-sm shadow-slate-200/50">
+<div class="flex items-center gap-4">
+<img alt="Najm Educational System Star Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0uiiPecP8vZkPKlbcT6A5oxamhPOluHqayqzmEvtv82jGuS-K381e1koDn8LzZc_jXtND_yFuSxVnMb_7P36y32U7404YqkL0ljNFXl1d1pQ8yAV5fBY3YaAQ8aGZXr34kiTktjh94_lFsge5mAqVQ7BUML2rq3c5gkgMLsrRbMvTmkSTp2nOVr_gqGP_tvXbNFvZKgz0F5tXXumvUgIyUJZ7ju4g120n-NguOIuT5ajPnKDjTS82kISBCMq6Yu2TQeqAEHU8m6KLw"/>
+<span class="text-2xl font-black bg-gradient-to-r from-yellow-400 via-red-500 to-purple-600 bg-clip-text text-transparent font-headline">Najm Educational System</span>
+</div>
+<nav class="hidden md:flex items-center gap-8 font-medium">
+<a class="text-primary font-bold border-b-2 border-primary pb-1" href="#">الرئيسية</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-all duration-300" href="#">المناهج</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-all duration-300" href="#">لوحة الصدارة</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-all duration-300" href="#">المراحل الدراسية</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-bold hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95">تسجيل الدخول</button>
+<div class="hidden sm:flex items-center gap-2 text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-yellow-500">stars</span>
+<span>رصيد النجوم: 120</span>
+</div>
+</div>
+</header>
+<main class="pt-24">
+<!-- Hero Section -->
+<section class="relative min-h-[819px] flex items-center academic-prism-gradient overflow-hidden">
+<div class="container mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
+<div class="z-10 text-right">
+<span class="inline-block px-4 py-1.5 mb-6 rounded-full bg-primary-container/20 text-primary font-bold text-sm tracking-wide">مستقبلك يبدأ هنا</span>
+<h1 class="text-5xl md:text-7xl font-extrabold font-headline leading-tight mb-6 text-on-surface">
+                    رحلتك نحو <span class="text-primary">التفوق</span> تبدأ من هنا
+                </h1>
+<p class="text-lg md:text-xl text-on-surface-variant mb-10 max-w-xl leading-relaxed">
+                    نظام نجم التعليمي يوفر لك الأدوات والمناهج المتطورة لتحقيق أهدافك الأكاديمية بأسلوب تفاعلي حديث وممتع.
+                </p>
+<div class="flex flex-wrap gap-4 justify-start">
+<button class="px-8 py-4 rounded-full bg-primary text-on-primary text-lg font-bold hover:translate-y-[-2px] hover:shadow-xl hover:shadow-primary/25 transition-all">ابدأ رحلتك الآن</button>
+<button class="px-8 py-4 rounded-full border border-outline-variant/30 text-on-surface text-lg font-bold hover:bg-surface-container-low transition-all">اكتشف المناهج</button>
+</div>
+</div>
+<div class="relative hidden md:flex items-center justify-center p-8">
+<img alt="Najm Educational System Logo" class="relative z-10 w-full max-w-lg h-auto object-contain drop-shadow-2xl" src="https://lh3.googleusercontent.com/aida/ADBb0uiiPecP8vZkPKlbcT6A5oxamhPOluHqayqzmEvtv82jGuS-K381e1koDn8LzZc_jXtND_yFuSxVnMb_7P36y32U7404YqkL0ljNFXl1d1pQ8yAV5fBY3YaAQ8aGZXr34kiTktjh94_lFsge5mAqVQ7BUML2rq3c5gkgMLsrRbMvTmkSTp2nOVr_gqGP_tvXbNFvZKgz0F5tXXumvUgIyUJZ7ju4g120n-NguOIuT5ajPnKDjTS82kISBCMq6Yu2TQeqAEHU8m6KLw"/>
+</div>
+</div>
+</section>
+<!-- "Discover Your Path" Section -->
+<section class="py-24 bg-surface">
+<div class="container mx-auto px-8">
+<div class="text-center mb-16">
+<h2 class="text-4xl md:text-5xl font-black font-headline mb-4 text-on-surface">اكتشف مسارك التعليمي</h2>
+<div class="w-24 h-1.5 bg-primary mx-auto rounded-full"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+<!-- 9th Grade - Yellow -->
+<div class="group relative p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10 shadow-lg shadow-slate-200/50 hover:translate-y-[-8px] transition-all duration-500">
+<div class="w-full aspect-video rounded-lg bg-amber-100 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform overflow-hidden">
+<img alt="9th Grade Icon" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0uisZuBECQItZLu0vrkmDmKuhjONVVIIg8ZJU1pd1UMS4UyIzlYB4ShqEsir_2BSVmIv-jhjlPYsr8lHH14Wpa_aQh71VEdCYBszgH3HWa2aTfPs0QDXY247nJIiol_YR9P9g77KtixFyhMlb3COxjn_qj4_4vbxdHWOjIPYENL9wLizDxTPnjfnnmO4OTWvHGgZU9FB6nTX--cfnUNPV0qodj6u6n1L5Hc9HO-Fm0OyFOpXEPsqsLA6tRhXDd6GOgx0Pd9tbcqHvw"/>
+</div>
+<h3 class="text-xl font-bold mb-3 text-on-surface">الصف التاسع</h3>
+<p class="text-on-surface-variant text-sm mb-6">تأسيس قوي وشامل لمرحلة التعليم الأساسي مع نماذج امتحانات حديثة.</p>
+<div class="h-1.5 w-full bg-amber-500/10 rounded-full overflow-hidden">
+<div class="h-full w-full bg-amber-500"></div>
+</div>
+</div>
+<!-- 12th Grade - Red -->
+<div class="group relative p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10 shadow-lg shadow-slate-200/50 hover:translate-y-[-8px] transition-all duration-500">
+<div class="w-full aspect-video rounded-lg bg-red-100 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform overflow-hidden">
+<img alt="12th Grade Icon" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ug-vfqE9SN62Yacx9xdhkvEHm7mr7mrZng4m6LfdYW-QmBTOmQfXcryWPFrNtfcc_iZxOb8l8_NehbNTg3hTrQTFL3rno-9IHNEynPenDu62VC02b7pj1fm_sloBT7djUph_36Q4rynnaaSA7OYQGqBlq9CKqjkPCOy7AQK_wj524CSgILBE60eMKV415QpY5kGOWCWticFAajLkTS32IrMnNaJxQB9-OQS4nkJ9Z56zoRgcxn3PlgPX0mzfTgWJIKMiCWg_eAOYw"/>
+</div>
+<h3 class="text-xl font-bold mb-3 text-on-surface">البكالوريا</h3>
+<p class="text-on-surface-variant text-sm mb-6">تحضير مكثف للمرحلة الثانوية مع أفضل الأساتذة لضمان التفوق.</p>
+<div class="h-1.5 w-full bg-red-500/10 rounded-full overflow-hidden">
+<div class="h-full w-full bg-red-500"></div>
+</div>
+</div>
+<!-- General English - Blue -->
+<div class="group relative p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10 shadow-lg shadow-slate-200/50 hover:translate-y-[-8px] transition-all duration-500">
+<div class="w-full aspect-video rounded-lg bg-blue-100 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform overflow-hidden">
+<img alt="English Icon" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ugIkscipEEufHl6VdJvbqJwOEAcKEbanmWZQ6JynX0REmJkrjH96YA4N8LC3xrpva3oHs8idrDtyJRFCvttMB7ARWM5QYdR3_fUJS_pUIHT4A8Wr56tUxnauXy9b7oojPPSmI51mBWY1WDaw26oL3_m6oy31_vjt2dun6Yt7lYAkWrWg9pkMmx_dgpB63T57pZB_B4qLBQ9JPwo_L_J40sSImzLpbuSPQGKei4QKjkyNVv7t42hAZH8EyxWpGaYTwG19AsbDVls8g"/>
+</div>
+<h3 class="text-xl font-bold mb-3 text-on-surface">اللغة الإنجليزية</h3>
+<p class="text-on-surface-variant text-sm mb-6">تطوير مهارات المحادثة والكتابة بأساليب عالمية معتمدة.</p>
+<div class="h-1.5 w-full bg-blue-500/10 rounded-full overflow-hidden">
+<div class="h-full w-full bg-blue-500"></div>
+</div>
+</div>
+<!-- 1000 Steps - Green -->
+<div class="group relative p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10 shadow-lg shadow-slate-200/50 hover:translate-y-[-8px] transition-all duration-500">
+<div class="w-full aspect-video rounded-lg bg-emerald-100 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform overflow-hidden">
+<img alt="1000 Steps Icon" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0uha51Znobk55Emq5Vm9skGutWVyfV2kefxrUnHvfv5nNh1hz_IV-x8SkS_uxSzJkK6b049GBd_ulYjuKvr_eETeC71BrEx9GdMEnaFzwz-TypJ3Yrv0cpdbcgohBHCHMDf2IstKkMirjzbHw5NBbULp9jFC-62ceGwu-FYdIIRV41BsMMD5zZUYNaK7jNLuv6t85KixgJbu40Qno5t3nBHr64aXhfj3njCUX5LwmqG6yqeJ3HrAsbtdzkf-AiZ9Qw1-MyBAgdO9jw"/>
+</div>
+<h3 class="text-xl font-bold mb-3 text-on-surface">مشروع 1000 خطوة</h3>
+<p class="text-on-surface-variant text-sm mb-6">رحلة تدريجية نحو الإتقان الكامل للمهارات الأكاديمية والذاتية.</p>
+<div class="h-1.5 w-full bg-emerald-500/10 rounded-full overflow-hidden">
+<div class="h-full w-full bg-emerald-500"></div>
+</div>
+</div>
+<!-- IELTS - Purple -->
+<div class="group relative p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10 shadow-lg shadow-slate-200/50 hover:translate-y-[-8px] transition-all duration-500">
+<div class="w-full aspect-video rounded-lg bg-purple-100 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform overflow-hidden">
+<img alt="IELTS Icon" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0uhUVro_124SfMe2XiU8y8g3ACI_05I9rx0VumYeggWLf5ISnbar2Gxlg7zlMGyRCIMeYbvmMtOY6_nRd3zADH2e5uEoMnIKtJpKOoaeEgCCgouNj_NgbDCPlheNZjWC4c2cWyq8vhFyiO4RsFAhKQwiEjOPbeVkjCh5U1z92ewMLqhpIkXD_D_wodAMwl8YReSvbhFP0YitGxJ_GmWDPPwwr9E0zFdyWLzmWvMdDa97mehvqyAgd1Sw9mioApFuH7_uJAIo6KAI"/>
+</div>
+<h3 class="text-xl font-bold mb-3 text-on-surface">تحضير الآيلتس</h3>
+<p class="text-on-surface-variant text-sm mb-6">تدريب متخصص لاجتياز اختبار الآيلتس بأعلى الدرجات المطلوبة.</p>
+<div class="h-1.5 w-full bg-purple-500/10 rounded-full overflow-hidden">
+<div class="h-full w-full bg-purple-500"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Section (Social Proof) -->
+<section class="py-16 bg-surface-container-low border-y border-outline-variant/10">
+<div class="container mx-auto px-8 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+<div>
+<div class="text-4xl font-black font-headline text-primary mb-2">+١٥,٠٠٠</div>
+<div class="text-on-surface-variant font-medium">طالب نشط</div>
+</div>
+<div>
+<div class="text-4xl font-black font-headline text-secondary mb-2">+٥٠٠</div>
+<div class="text-on-surface-variant font-medium">دورة تدريبية</div>
+</div>
+<div>
+<div class="text-4xl font-black font-headline text-tertiary mb-2">٩٨٪</div>
+<div class="text-on-surface-variant font-medium">نسبة النجاح</div>
+</div>
+<div>
+<div class="text-4xl font-black font-headline text-error mb-2">+١٠٠</div>
+<div class="text-on-surface-variant font-medium">معلم خبير</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest py-16 px-8 border-t border-outline-variant/10">
+<div class="container mx-auto grid md:grid-cols-4 gap-12">
+<div class="md:col-span-1">
+<div class="flex items-center gap-3 mb-6">
+<img alt="Najm Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0uiiPecP8vZkPKlbcT6A5oxamhPOluHqayqzmEvtv82jGuS-K381e1koDn8LzZc_jXtND_yFuSxVnMb_7P36y32U7404YqkL0ljNFXl1d1pQ8yAV5fBY3YaAQ8aGZXr34kiTktjh94_lFsge5mAqVQ7BUML2rq3c5gkgMLsrRbMvTmkSTp2nOVr_gqGP_tvXbNFvZKgz0F5tXXumvUgIyUJZ7ju4g120n-NguOIuT5ajPnKDjTS82kISBCMq6Yu2TQeqAEHU8m6KLw"/>
+<span class="text-xl font-black font-headline">نظام نجم</span>
+</div>
+<p class="text-on-surface-variant leading-relaxed text-sm">
+                المنصة التعليمية الرائدة في المنطقة لتوفير محتوى تعليمي متميز يجمع بين الجودة والإبداع التقني.
+            </p>
+</div>
+<div>
+<h4 class="font-bold text-on-surface mb-6">روابط سريعة</h4>
+<ul class="space-y-4 text-sm text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">من نحن</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">الأسئلة الشائعة</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">سياسة الخصوصية</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">اتصل بنا</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-on-surface mb-6">المراحل التعليمية</h4>
+<ul class="space-y-4 text-sm text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">التعليم الأساسي</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">التعليم الثانوي</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">دورات اللغات</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">التطوير المهني</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-on-surface mb-6">اشترك في النشرة</h4>
+<p class="text-sm text-on-surface-variant mb-4">كن أول من يعرف عن الدورات والميزات الجديدة.</p>
+<div class="flex gap-2">
+<input class="bg-surface-container-low border-none rounded-full px-4 py-2 text-sm w-full focus:ring-2 focus:ring-primary/20" placeholder="بريدك الإلكتروني" type="email"/>
+<button class="bg-primary text-on-primary rounded-full p-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+<div class="container mx-auto mt-16 pt-8 border-t border-outline-variant/10 text-center text-sm text-on-surface-variant">
+<p>© 2024 نظام نجم التعليمي. جميع الحقوق محفوظة.</p>
+</div>
+</footer>
+</body></html>

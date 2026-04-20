@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Najm Educational System - General English</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-error-container": "#570008",
+                        "tertiary-fixed": "#bda2ff",
+                        "on-secondary-container": "#005a3c",
+                        "tertiary-fixed-dim": "#b091ff",
+                        "secondary-fixed-dim": "#58e7ab",
+                        "tertiary-container": "#bda2ff",
+                        "outline": "#69788e",
+                        "primary-container": "#dbeafe",
+                        "background": "#f4f6ff",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#4285F4",
+                        "secondary-dim": "#005c3d",
+                        "on-secondary-fixed-variant": "#006544",
+                        "surface-bright": "#f4f6ff",
+                        "on-primary-fixed-variant": "#002a62",
+                        "inverse-surface": "#010f21",
+                        "on-secondary": "#c8ffe0",
+                        "tertiary-dim": "#5e26c7",
+                        "error": "#b31b25",
+                        "on-background": "#212f43",
+                        "on-tertiary-container": "#3c0091",
+                        "on-surface": "#212f43",
+                        "primary-fixed-dim": "#5391ff",
+                        "surface-container-high": "#d3e3ff",
+                        "surface-container-low": "#ebf1ff",
+                        "error-dim": "#9f0519",
+                        "secondary-container": "#69f6b8",
+                        "on-primary-fixed": "#000000",
+                        "secondary": "#006947",
+                        "outline-variant": "#a0aec6",
+                        "primary-fixed": "#4285F4",
+                        "on-secondary-fixed": "#00452d",
+                        "tertiary": "#6a37d4",
+                        "on-surface-variant": "#4e5c71",
+                        "inverse-on-surface": "#8f9eb5",
+                        "surface-container-highest": "#cadeff",
+                        "surface-dim": "#bfd6fa",
+                        "on-tertiary-fixed-variant": "#4600a8",
+                        "on-error": "#ffefee",
+                        "on-tertiary": "#f8f0ff",
+                        "surface": "#f4f6ff",
+                        "surface-variant": "#cadeff",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#69f6b8",
+                        "primary": "#4285F4",
+                        "surface-container": "#dde9ff",
+                        "on-primary-container": "#002150",
+                        "on-tertiary-fixed": "#1f0052",
+                        "primary-dim": "#1a73e8",
+                        "error-container": "#fb5151",
+                        "inverse-primary": "#4d8eff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "1rem",
+                        "xl": "1.25rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans", "IBM Plex Sans Arabic"],
+                        "body": ["Manrope", "IBM Plex Sans Arabic"],
+                        "label": ["Manrope", "IBM Plex Sans Arabic"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', 'IBM Plex Sans Arabic', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-nav { background: rgba(244, 246, 255, 0.7); backdrop-filter: blur(12px); }
+        .tonal-stacking-no-borders { border: none !important; }
+        .stars-gradient { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); }
+        .blue-gradient { background: linear-gradient(155deg, #4285F4 0%, #1a73e8 100%); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full flex flex-row-reverse justify-between items-center px-8 py-4 glass-nav z-50 tonal-layering bg-surface-container-low shadow-sm shadow-slate-200/50">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<img alt="Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ugIkscipEEufHl6VdJvbqJwOEAcKEbanmWZQ6JynX0REmJkrjH96YA4N8LC3xrpva3oHs8idrDtyJRFCvttMB7ARWM5QYdR3_fUJS_pUIHT4A8Wr56tUxnauXy9b7oojPPSmI51mBWY1WDaw26oL3_m6oy31_vjt2dun6Yt7lYAkWrWg9pkMmx_dgpB63T57pZB_B4qLBQ9JPwo_L_J40sSImzLpbuSPQGKei4QKjkyNVv7t42hAZH8EyxWpGaYTwG19AsbDVls8g"/>
+<span class="text-2xl font-black bg-gradient-to-r from-primary to-primary-dim bg-clip-text text-transparent font-headline">Najm Educational System</span>
+</div>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-medium" href="#">الرئيسية</a>
+<a class="text-on-surface-variant hover:text-on-surface font-medium transition-all duration-300" href="#">المناهج</a>
+<a class="text-on-surface-variant hover:text-on-surface font-medium transition-all duration-300" href="#">لوحة الصدارة</a>
+<a class="text-on-surface-variant hover:text-on-surface font-medium transition-all duration-300" href="#">المراحل الدراسية</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest rounded-full shadow-sm">
+<span class="material-symbols-outlined text-yellow-500" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-bold text-on-surface">رصيد النجوم: 180</span>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-all"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<img alt="صورة الملف الشخصي" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="close-up portrait of a smiling male student with short dark hair in a brightly lit academic setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvrg713PCZzg3KfwMUr8Y4DCpvSoqLUlIrNKCl4Iefb2VlASAEqZWgQl1g5SuujhyoV6ZF10cEPrNaEtIpZ4m2LZepvVzdT7bg3aMCblaKJuO0K3bnhxizRcmiPoA1c815OBt883qORyD_pqP_8wy6cOyioDHTLKhdsqjhzFeWuA9cORKx7KHXqRQ7B1PpWjikwMW8xAcjMKMdKqXqiKRSkw99mylLvy7sHw-xCF36NwJzQ6AAoI5nbqokahrsc_zWm6zMQQ62G2s"/>
+</div>
+</div>
+</header>
+<div class="flex pt-20 h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed right-0 h-full w-64 bg-surface-container-low flex flex-col py-6 gap-2 rtl tonal-stacking-no-borders shadow-lg shadow-blue-900/5 z-40 hidden md:flex">
+<div class="px-6 mb-8 flex flex-col items-center text-center">
+<div class="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mb-3 overflow-hidden p-2">
+<img alt="Najm Logo" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0ugIkscipEEufHl6VdJvbqJwOEAcKEbanmWZQ6JynX0REmJkrjH96YA4N8LC3xrpva3oHs8idrDtyJRFCvttMB7ARWM5QYdR3_fUJS_pUIHT4A8Wr56tUxnauXy9b7oojPPSmI51mBWY1WDaw26oL3_m6oy31_vjt2dun6Yt7lYAkWrWg9pkMmx_dgpB63T57pZB_B4qLBQ9JPwo_L_J40sSImzLpbuSPQGKei4QKjkyNVv7t42hAZH8EyxWpGaYTwG19AsbDVls8g"/>
+</div>
+<h2 class="font-bold text-xl text-on-surface font-headline">نظام نجم</h2>
+<p class="text-xs text-on-surface-variant">طريقك نحو التفوق</p>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-transform hover:translate-x-[-4px]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-medium">لوحة التحكم</span>
+</a>
+<a class="flex items-center gap-3 p-3 bg-white text-primary rounded-xl shadow-sm font-bold mx-2" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span class="font-medium">دروسي</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-transform hover:translate-x-[-4px]" href="#">
+<span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+<span class="font-medium">المهام اليومية</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-transform hover:translate-x-[-4px]" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="font-medium">النتائج</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-transform hover:translate-x-[-4px]" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-medium">الإعدادات</span>
+</a>
+</nav>
+<div class="mt-auto px-4 space-y-4">
+<button class="w-full blue-gradient text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm">chat_bubble</span>
+                تواصل مع المعلم
+            </button>
+<a class="flex items-center gap-3 p-3 text-error-dim hover:bg-error-container/10 mx-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-medium">تسجيل الخروج</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:mr-64 p-8 overflow-y-auto bg-surface">
+<!-- Header Section with Breadcrumb -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<nav class="flex items-center gap-2 text-on-surface-variant text-sm mb-2 font-medium">
+<span>المناهج</span>
+<span class="material-symbols-outlined text-xs">chevron_left</span>
+<span class="text-primary">General English Path</span>
+</nav>
+<h1 class="text-4xl font-black text-on-surface font-headline leading-tight">English Grammar: The Present Perfect</h1>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-2xl flex items-center gap-4 shadow-sm">
+<div class="w-12 h-12 stars-gradient rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">grade</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider">مجموع نقاطك</p>
+<p class="text-2xl font-black text-on-surface">180 نجمة</p>
+</div>
+</div>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Primary Video Section -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<div class="bg-surface-container-lowest rounded-xl p-2 border-4 border-primary shadow-xl shadow-blue-900/5 aspect-video relative overflow-hidden group">
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" class="w-full h-full rounded-lg" frameborder="0" src="https://www.youtube.com/embed/placeholder" title="English Lesson Video">
+</iframe>
+</div>
+<!-- Lesson Description -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border-r-4 border-primary">
+<h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">info</span>
+                        حول هذا الدرس
+                    </h3>
+<p class="text-on-surface-variant leading-relaxed text-lg">
+                        في هذا الدرس، سنستعرض زمن المضارع التام (Present Perfect) بالتفصيل. سنناقش كيفية تكوين الجمل، متى نستخدم هذا الزمن، والفرق بينه وبين الماضي البسيط. هذا الدرس أساسي لإتقان مهارات التحدث والكتابة باللغة الإنجليزية.
+                    </p>
+<div class="mt-6 flex flex-wrap gap-3">
+<span class="px-4 py-2 bg-blue-50 text-primary rounded-full text-sm font-bold">Grammar</span>
+<span class="px-4 py-2 bg-blue-50 text-primary rounded-full text-sm font-bold">B1 Level</span>
+<span class="px-4 py-2 bg-blue-50 text-primary rounded-full text-sm font-bold">15 Minutes</span>
+</div>
+</div>
+</div>
+<!-- Secondary Content (Form/Quiz) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Practice Exam Card -->
+<div class="bg-surface-container-lowest rounded-xl flex flex-col h-full shadow-sm border-t-4 border-primary overflow-hidden">
+<div class="p-6 border-b border-outline-variant/10 flex items-center justify-between bg-blue-50/30">
+<h3 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">quiz</span>
+                            اختبار التدريب
+                        </h3>
+<span class="text-xs bg-primary text-white px-2 py-1 rounded-md">مهمة نشطة</span>
+</div>
+<div class="flex-1 min-h-[500px] p-2 bg-surface-container-low">
+<iframe class="w-full h-full rounded-lg border-2 border-primary/20" frameborder="0" marginheight="0" marginwidth="0" src="https://docs.google.com/forms/placeholder">
+                            جاري التحميل...
+                        </iframe>
+</div>
+<div class="p-6 bg-surface-container-lowest text-center">
+<p class="text-sm text-on-surface-variant mb-4">أكمل الاختبار للحصول على <span class="text-primary font-bold">25 نجمة</span> إضافية</p>
+<button class="w-full py-3 rounded-full border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-all duration-300">
+                            تكبير الاختبار
+                        </button>
+</div>
+</div>
+<!-- Progress Tracking -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+<h4 class="font-bold text-on-surface mb-4">تقدمك في المسار</h4>
+<div class="w-full bg-surface-container-high h-3 rounded-full overflow-hidden mb-2">
+<div class="bg-primary h-full w-[65%] rounded-full shadow-lg shadow-blue-500/20"></div>
+</div>
+<div class="flex justify-between text-xs font-bold text-on-surface-variant">
+<span>65% مكتمل</span>
+<span>12/18 دروس</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Suggested Lessons -->
+<section class="mt-12">
+<h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">auto_stories</span>
+                الدروس القادمة
+            </h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm hover:shadow-md transition-all group cursor-pointer">
+<div class="h-32 rounded-lg bg-slate-200 mb-4 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="vibrant educational classroom scene with bookshelves and interactive digital screens in soft focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTiq4rODt_18UgUE7kvc-vIwhHetsOCP6hkNB8mP_JljJ927SNh4QDgg0BYe44RFuseNASnSj8BiWBTjyLumR7SHlnlTWizn6mYRGWaqRRtXl00B_zqTc8FWZ_KYDBu23hW1rwV_9WeyshfnUSM_ZtnHS2zREXOCerBtEQSSMNBoVdQG4iMbEM9yz0PgLvNmfDGXxHRmw4coEHHezOwcSE8ss3M9x4OJV8hOMfv1foY4ngrvzJ7v6qHAfmZb4VzeNcCGkoaEQs-vo"/>
+</div>
+<h4 class="font-bold text-on-surface mb-1">Passive Voice Basics</h4>
+<p class="text-xs text-on-surface-variant">الدرس القادم • 12 دقيقة</p>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm hover:shadow-md transition-all group cursor-pointer">
+<div class="h-32 rounded-lg bg-slate-200 mb-4 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="stack of colorful academic books with reading glasses on top under warm library lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCehLKAlppvBErBKaAYDQTldm-86wD18NZ6Mq2-Zc3Xi3rzmnujH0OkOlhUREWcH7o2kTTu9PWQulHuJvlt957Ts6IXTPFqMlkV11z5t2be1So81GpICi8j5eMjqX9YhoXhw7mmGsOLfE1WzREdXGMEXdGpjoohGVYckue2ZfMNGzicojiEv-lqfFZC65_1k2Azz5I5tiVEMutaHfCoOvG5R4HuDpHIjlWp1fo840IBFr34iA8-O17koLjM4n8PXeXMjhDs-v1ecEg"/>
+<div class="absolute inset-0 bg-on-surface/40 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-3xl">lock</span>
+</div>
+</div>
+<h4 class="font-bold text-on-surface mb-1">Vocabulary: Travel</h4>
+<p class="text-xs text-on-surface-variant">مغلق • أكمل الدرس الحالي</p>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm hover:shadow-md transition-all group cursor-pointer border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-outline-variant text-4xl mb-2">more_horiz</span>
+<p class="font-bold text-on-surface-variant">تصفح كل الدروس</p>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Mobile Navigation -->
+<footer class="md:hidden fixed bottom-0 w-full bg-surface-container-low glass-nav flex justify-around py-4 z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px]">الرئيسية</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span class="text-[10px] font-bold">دروسي</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">stars</span>
+<span class="text-[10px]">النجوم</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px]">حسابي</span>
+</button>
+</footer>
+</body></html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#570008",
+                    "tertiary-fixed": "#bda2ff",
+                    "on-secondary-container": "#005a3c",
+                    "tertiary-fixed-dim": "#b091ff",
+                    "secondary-fixed-dim": "#58e7ab",
+                    "tertiary-container": "#bda2ff",
+                    "outline": "#69788e",
+                    "primary-container": "#EF4444", 
+                    "background": "#f4f6ff",
+                    "on-primary": "#ffffff",
+                    "surface-tint": "#EF4444",
+                    "secondary-dim": "#005c3d",
+                    "on-secondary-fixed-variant": "#006544",
+                    "surface-bright": "#f4f6ff",
+                    "on-primary-fixed-variant": "#002a62",
+                    "inverse-surface": "#010f21",
+                    "on-secondary": "#c8ffe0",
+                    "tertiary-dim": "#5e26c7",
+                    "error": "#b31b25",
+                    "on-background": "#212f43",
+                    "on-tertiary-container": "#3c0091",
+                    "on-surface": "#212f43",
+                    "primary-fixed-dim": "#ef4444",
+                    "surface-container-high": "#fee2e2",
+                    "surface-container-low": "#ebf1ff",
+                    "error-dim": "#9f0519",
+                    "secondary-container": "#69f6b8",
+                    "on-primary-fixed": "#000000",
+                    "secondary": "#006947",
+                    "outline-variant": "#a0aec6",
+                    "primary-fixed": "#fca5a5",
+                    "on-secondary-fixed": "#00452d",
+                    "tertiary": "#6a37d4",
+                    "on-surface-variant": "#4e5c71",
+                    "inverse-on-surface": "#8f9eb5",
+                    "surface-container-highest": "#fecaca",
+                    "surface-dim": "#bfd6fa",
+                    "on-tertiary-fixed-variant": "#4600a8",
+                    "on-error": "#ffefee",
+                    "on-tertiary": "#f8f0ff",
+                    "surface": "#f4f6ff",
+                    "surface-variant": "#cadeff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#69f6b8",
+                    "primary": "#EF4444",
+                    "surface-container": "#dde9ff",
+                    "on-primary-container": "#450a0a",
+                    "on-tertiary-fixed": "#1f0052",
+                    "primary-dim": "#dc2626",
+                    "error-container": "#fb5151",
+                    "inverse-primary": "#f87171"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "1rem",
+                    "xl": "1.25rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans", "IBM Plex Sans Arabic"],
+                    "body": ["Manrope", "IBM Plex Sans Arabic"],
+                    "label": ["Manrope", "IBM Plex Sans Arabic"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', 'IBM Plex Sans Arabic', sans-serif; background-color: #F4F6FF; }
+        .font-plus-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .red-accent-border { border: 2px solid #EF4444; }
+        .glass-header { background: rgba(244, 246, 255, 0.7); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full flex flex-row-reverse justify-between items-center px-8 py-4 bg-surface/70 backdrop-blur-xl z-50 shadow-sm shadow-slate-200/50 transition-all duration-300 font-plus-jakarta text-right font-medium">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<img alt="Logo" class="h-10 w-auto object-contain rounded" src="https://lh3.googleusercontent.com/aida/ADBb0ug-vfqE9SN62Yacx9xdhkvEHm7mr7mrZng4m6LfdYW-QmBTOmQfXcryWPFrNtfcc_iZxOb8l8_NehbNTg3hTrQTFL3rno-9IHNEynPenDu62VC02b7pj1fm_sloBT7djUph_36Q4rynnaaSA7OYQGqBlq9CKqjkPCOy7AQK_wj524CSgILBE60eMKV415QpY5kGOWCWticFAajLkTS32IrMnNaJxQB9-OQS4nkJ9Z56zoRgcxn3PlgPX0mzfTgWJIKMiCWg_eAOYw"/>
+<div class="text-2xl font-black bg-gradient-to-r from-primary to-primary-dim bg-clip-text text-transparent">Najm System</div>
+</div>
+<div class="hidden md:flex gap-6 text-on-surface-variant">
+<a class="hover:text-primary transition-all" href="#">الرئيسية</a>
+<a class="hover:text-primary transition-all" href="#">المناهج</a>
+<a class="hover:text-primary transition-all" href="#">لوحة الصدارة</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1" href="#">المراحل الدراسية</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/15">
+<span class="material-symbols-outlined text-yellow-500" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-bold text-on-surface">رصيد النجوم: 250</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined p-2 hover:bg-surface-container-high rounded-full cursor-pointer transition-all">notifications</span>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20">
+<img class="w-full h-full object-cover" data-alt="Student Portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOjOKO9v7ULlOgcpxenZV5h8qFw0vbmI1y2FHhMJrlz1LzVpTXKtK_BoryIdjEzIBHJ3UWJSqm__OM9kcLkPE4uOqf4vk3pD36PvUDOaB_2oryJBwQTzl-ymqSGb812os3p8OrT9Kbvuif3DERBVhBMF_2gt96nI_W7izGykiSSIL3PUDjwkzF-mNRMH34RkvgLaPIR3pIWhzFc-411V4CbMd0-vOyPmcx_mH2AiBmzzR_6o2Mhc3jmcfzcIuDeRzUWCEsfCmQtdY"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex pt-20 h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed right-0 h-full w-64 border-l border-outline-variant/15 bg-surface-container-low flex flex-col py-6 gap-2 rtl z-40 transition-all font-plus-jakarta text-right shadow-lg shadow-primary/5">
+<div class="px-6 mb-8 flex flex-col gap-3">
+<img alt="Sidebar Logo" class="w-16 h-auto object-contain rounded" src="https://lh3.googleusercontent.com/aida/ADBb0ug-vfqE9SN62Yacx9xdhkvEHm7mr7mrZng4m6LfdYW-QmBTOmQfXcryWPFrNtfcc_iZxOb8l8_NehbNTg3hTrQTFL3rno-9IHNEynPenDu62VC02b7pj1fm_sloBT7djUph_36Q4rynnaaSA7OYQGqBlq9CKqjkPCOy7AQK_wj524CSgILBE60eMKV415QpY5kGOWCWticFAajLkTS32IrMnNaJxQB9-OQS4nkJ9Z56zoRgcxn3PlgPX0mzfTgWJIKMiCWg_eAOYw"/>
+<div>
+<h2 class="font-bold text-xl text-on-surface">نظام نجم</h2>
+<p class="text-xs text-on-surface-variant">طريقك نحو التفوق</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>لوحة التحكم</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 bg-white text-primary rounded-xl shadow-sm font-bold mx-2 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span>دروسي</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+<span>المهام اليومية</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span>النتائج</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>الإعدادات</span>
+</a>
+</nav>
+<div class="px-4 mt-auto space-y-4">
+<button class="w-full py-3 bg-primary text-on-primary rounded-full font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
+<span class="material-symbols-outlined">chat</span>
+<span>تواصل مع المعلم</span>
+</button>
+<a class="flex items-center gap-3 px-6 py-3 text-error hover:bg-error/5 mx-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>تسجيل الخروج</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 mr-64 overflow-y-auto p-8">
+<!-- Hero Header Section -->
+<div class="mb-10 flex justify-between items-end">
+<div class="space-y-2">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                        مسار الصف الثاني عشر - 12th Grade Path
+                    </div>
+<h1 class="text-4xl font-extrabold text-on-surface tracking-tight">Physics: Advanced Mechanics</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl">استكشاف القوانين المتقدمة للميكانيكا وتطبيقاتها العملية في الهندسة والعلوم الحديثة.</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/15 flex items-center gap-6">
+<div class="text-right">
+<p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider">رصيدك الحالي</p>
+<p class="text-3xl font-black text-on-surface">250 <span class="text-lg font-medium text-on-surface-variant">نجمة</span></p>
+</div>
+<div class="w-14 h-14 bg-gradient-to-br from-yellow-300 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg shadow-yellow-500/20">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+</div>
+</div>
+<!-- Learning Bento Grid -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Video Player Section -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 border-4 border-primary">
+<div class="aspect-video bg-slate-900 relative group">
+<div class="absolute inset-0 flex items-center justify-center">
+<img class="absolute inset-0 w-full h-full object-cover opacity-40" data-alt="Physics chalkboard background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC54VDtZIpKblwiPwtEmUvszOPhGAPhbg4R2synhMqrX49U5unKHWp29EOU56rCWsmji3eVlZB3inRFrBnURvsut5XW2DafV3PmAGM_dB516ahXos_IwIqmbSfFEXo75goHQ3vCACPlOgA9F60xYKRblh-5LoeyW-S7DEYOYKVfT25aM_lAUXbLppkWULG49rv3H2_1ZV1m23_mkQKON6O8WSsjiKFMmonyv8XACzU6mWTd8PwZFU785bXbraadOqhNieQFw3bmhs"/>
+<button class="z-10 w-20 h-20 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent flex justify-between items-center text-white">
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 bg-primary text-xs font-bold rounded">LIVE</span>
+<span class="font-medium">المحاضرة 04: قوانين الحركة الدورانية</span>
+</div>
+<span class="text-sm opacity-80">45:12 / 60:00</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="flex-1 py-4 bg-primary/10 text-primary rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all border border-primary/20">
+<span class="material-symbols-outlined">download</span>
+                            تحميل الملحقات الدراسية
+                        </button>
+<button class="flex-1 py-4 bg-primary/10 text-primary rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all border border-primary/20">
+<span class="material-symbols-outlined">notes</span>
+                            تدوين ملاحظات ذكية
+                        </button>
+</div>
+</div>
+<!-- Practice & Exam Section -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-surface-container-lowest rounded-3xl p-6 shadow-sm border-2 border-primary/20 flex flex-col h-full">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">quiz</span>
+</div>
+<div>
+<h3 class="font-bold text-lg">اختبار الممارسة</h3>
+<p class="text-xs text-on-surface-variant">قيم فهمك للدرس الحالي</p>
+</div>
+</div>
+<div class="flex-1 min-h-[400px] bg-surface-container-low rounded-xl border-2 border-primary relative overflow-hidden">
+<div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center space-y-4">
+<span class="material-symbols-outlined text-6xl text-primary/30">description</span>
+<h4 class="font-bold text-on-surface">نموذج التقييم الأولي</h4>
+<p class="text-sm text-on-surface-variant">يرجى الإجابة على الأسئلة التالية لقياس مدى استيعابك للمفاهيم الميكانيكية المتقدمة.</p>
+<button class="px-8 py-3 bg-primary text-white rounded-full font-bold shadow-lg shadow-primary/20">ابدأ الاختبار الآن</button>
+</div>
+</div>
+<div class="mt-6 p-4 bg-primary/5 rounded-xl flex items-center gap-4 border border-primary/10">
+<span class="material-symbols-outlined text-primary">info</span>
+<p class="text-xs text-on-surface leading-relaxed">بإكمال هذا الاختبار ستحصل على **15 نجمة إضافية** تضاف إلى رصيدك.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Editorial Section -->
+<section class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-primary/5 p-6 rounded-3xl border border-primary/10">
+<span class="material-symbols-outlined text-primary mb-2">auto_awesome</span>
+<h4 class="font-bold text-on-surface mb-1">الذكاء الاصطناعي يقترح</h4>
+<p class="text-sm text-on-surface-variant">بناءً على أدائك، ننصحك بمراجعة درس "الزخم الزاوي" قبل المضي قدماً.</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-3xl border border-outline-variant/15 flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">group</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant">الطلاب المتصلون</p>
+<p class="font-bold">1,240 طالب الآن</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-3xl border border-outline-variant/15 flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">schedule</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant">الوقت المتبقي للامتحان</p>
+<p class="font-bold">14 يوم : 06 ساعة</p>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

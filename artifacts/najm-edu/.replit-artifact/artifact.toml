@@ -1,0 +1,29 @@
+kind = "web"
+previewPath = "/"
+title = "نظام نجم التعليمي"
+version = "1.0.0"
+id = "artifacts/najm-edu"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25486
+
+[services.development]
+run = "pnpm --filter @workspace/najm-edu run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/najm-edu", "run", "build" ]
+run = [ "node", "artifacts/najm-edu/server.mjs" ]
+
+[services.production.env]
+NODE_ENV = "production"
+
+[services.env]
+PORT = "25486"
+BASE_PATH = "/"

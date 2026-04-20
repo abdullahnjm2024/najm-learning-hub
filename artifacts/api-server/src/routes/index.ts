@@ -1,0 +1,44 @@
+import { Router, type IRouter } from "express";
+import healthRouter from "./health";
+import authRouter from "./auth";
+import usersRouter from "./users";
+import lessonsRouter from "./lessons";
+import examsRouter from "./exams";
+import examAttemptsRouter from "./exam_attempts";
+import leaderboardRouter from "./leaderboard";
+import notificationsRouter from "./notifications";
+import statsRouter from "./stats";
+import webhookRouter from "./webhook";
+import syncRouter from "./sync";
+import pushRouter from "./push";
+import subjectsRouter from "./subjects";
+import unitsRouter from "./units";
+import progressRouter from "./progress";
+import siteSettingsRouter from "./site_settings";
+import prizesRouter from "./prizes";
+import staffAuthRouter from "./staff_auth";
+import staffManagementRouter from "./staff_management";
+
+const router: IRouter = Router();
+
+router.use(healthRouter);
+router.use(authRouter);
+router.use(usersRouter);
+router.use(lessonsRouter);
+router.use(examsRouter);
+router.use(examAttemptsRouter);
+router.use(leaderboardRouter);
+router.use(notificationsRouter);
+router.use(statsRouter);
+router.use(webhookRouter);
+router.use(syncRouter);
+router.use(pushRouter);
+router.use(subjectsRouter);
+router.use(unitsRouter);
+router.use(progressRouter);
+router.use(siteSettingsRouter);
+router.use(prizesRouter);
+router.use(staffAuthRouter);
+router.use(staffManagementRouter);
+
+export default router;

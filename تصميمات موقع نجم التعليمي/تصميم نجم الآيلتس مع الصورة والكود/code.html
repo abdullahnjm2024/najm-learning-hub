@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#570008",
+                    "tertiary-fixed": "#bda2ff",
+                    "on-secondary-container": "#005a3c",
+                    "tertiary-fixed-dim": "#b091ff",
+                    "secondary-fixed-dim": "#58e7ab",
+                    "tertiary-container": "#bda2ff",
+                    "outline": "#69788e",
+                    "primary-container": "#9333EA", 
+                    "background": "#f8f7ff",
+                    "on-primary": "#ffffff",
+                    "surface-tint": "#9333EA",
+                    "secondary-dim": "#5e26c7",
+                    "on-secondary-fixed-variant": "#4600a8",
+                    "inverse-surface": "#010f21",
+                    "on-secondary": "#ffffff",
+                    "tertiary-dim": "#5e26c7",
+                    "error": "#b31b25",
+                    "on-background": "#212f43",
+                    "on-tertiary-container": "#3c0091",
+                    "on-surface": "#212f43",
+                    "primary-fixed-dim": "#a855f7",
+                    "surface-container-high": "#f3e8ff",
+                    "surface-container-low": "#f5f3ff",
+                    "error-dim": "#9f0519",
+                    "secondary-container": "#d8b4fe",
+                    "on-primary-fixed": "#000000",
+                    "secondary": "#7c3aed",
+                    "outline-variant": "#cbd5e1",
+                    "primary-fixed": "#d8b4fe",
+                    "on-secondary-fixed": "#1e1b4b",
+                    "tertiary": "#6a37d4",
+                    "on-surface-variant": "#4e5c71",
+                    "inverse-on-surface": "#8f9eb5",
+                    "surface-container-highest": "#e9d5ff",
+                    "surface-dim": "#bfd6fa",
+                    "on-tertiary-fixed-variant": "#4600a8",
+                    "on-error": "#ffefee",
+                    "on-tertiary": "#f8f0ff",
+                    "surface": "#f8f7ff",
+                    "surface-variant": "#e2e8f0",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#d8b4fe",
+                    "primary": "#9333EA",
+                    "surface-container": "#f0f9ff",
+                    "on-primary-container": "#2e1065",
+                    "on-tertiary-fixed": "#1f0052",
+                    "primary-dim": "#7e22ce",
+                    "error-container": "#fb5151",
+                    "inverse-primary": "#c084fc"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "1rem",
+                    "xl": "1.25rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans", "IBM Plex Sans Arabic"],
+                    "body": ["Manrope", "IBM Plex Sans Arabic"],
+                    "label": ["Manrope", "IBM Plex Sans Arabic"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', 'IBM Plex Sans Arabic', sans-serif; background-color: #f8f7ff; }
+        .font-plus-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .purple-accent-border { border: 2px solid #9333EA; }
+        .glass-header { background: rgba(248, 247, 255, 0.7); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full flex flex-row-reverse justify-between items-center px-8 py-4 bg-surface/70 backdrop-blur-xl z-50 shadow-sm shadow-purple-200/50 transition-all duration-300 font-plus-jakarta text-right font-medium">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<img alt="Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/ADBb0uhUVro_124SfMe2XiU8y8g3ACI_05I9rx0VumYeggWLf5ISnbar2Gxlg7zlMGyRCIMeYbvmMtOY6_nRd3zADH2e5uEoMnIKtJpKOoaeEgCCgouNj_NgbDCPlheNZjWC4c2cWyq8vhFyiO4RsFAhKQwiEjOPbeVkjCh5U1z92ewMLqhpIkXD_D_wodAMwl8YReSvbhFP0YitGxJ_GmWDPPwwr9E0zFdyWLzmWvMdDa97mehvqyAgd1Sw9mioApFuH7_uJAIo6KAI"/>
+<div class="text-2xl font-black bg-gradient-to-r from-purple-400 via-purple-600 to-purple-800 bg-clip-text text-transparent">Najm IELTS</div>
+</div>
+<div class="hidden md:flex gap-6 text-on-surface-variant">
+<a class="hover:text-primary transition-all" href="#">الرئيسية</a>
+<a class="hover:text-primary transition-all" href="#">الدورات</a>
+<a class="hover:text-primary transition-all" href="#">النتائج</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1" href="#">تحضير الآيلتس</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-purple-50 px-4 py-2 rounded-full border border-primary/20">
+<span class="material-symbols-outlined text-purple-600" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-bold text-primary">رصيد النجوم: 250</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined p-2 hover:bg-surface-container-high rounded-full cursor-pointer transition-all">notifications</span>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20">
+<img alt="Student Portrait" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOjOKO9v7ULlOgcpxenZV5h8qFw0vbmI1y2FHhMJrlz1LzVpTXKtK_BoryIdjEzIBHJ3UWJSqm__OM9kcLkPE4uOqf4vk3pD36PvUDOaB_2oryJBwQTzl-ymqSGb812os3p8OrT9Kbvuif3DERBVhBMF_2gt96nI_W7izGykiSSIL3PUDjwkzF-mNRMH34RkvgLaPIR3pIWhzFc-411V4CbMd0-vOyPmcx_mH2AiBmzzR_6o2Mhc3jmcfzcIuDeRzUWCEsfCmQtdY"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex pt-20 h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed right-0 h-full w-64 border-l border-outline-variant/15 bg-surface-container-low flex flex-col py-6 gap-2 rtl z-40 transition-all font-plus-jakarta text-right shadow-lg shadow-purple-900/5">
+<div class="px-6 mb-8 flex flex-col gap-1">
+<h2 class="font-bold text-xl text-primary">نظام نجم IELTS</h2>
+<p class="text-xs text-on-surface-variant">بوابتك للجامعات العالمية</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>لوحة التحكم</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 bg-white text-primary rounded-xl shadow-sm font-bold mx-2 transition-all" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+<span>دوراتي</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span>تدريبات يومية</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">emoji_events</span>
+<span>الإنجازات</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant hover:bg-surface-container-high mx-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>الإعدادات</span>
+</a>
+</nav>
+<div class="px-4 mt-auto space-y-4">
+<button class="w-full py-3 bg-primary text-on-primary rounded-full font-bold flex items-center justify-center gap-2 shadow-lg shadow-purple-400/20 hover:scale-[1.02] transition-transform">
+<span class="material-symbols-outlined">support_agent</span>
+<span>تواصل مع المدرب</span>
+</button>
+<a class="flex items-center gap-3 px-6 py-3 text-error hover:bg-error/5 mx-2 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>تسجيل الخروج</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 mr-64 overflow-y-auto p-8">
+<!-- Hero Header Section -->
+<div class="mb-10 flex justify-between items-end">
+<div class="space-y-2">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                        Academic Module - التحضير الأكاديمي
+                    </div>
+<h1 class="text-4xl font-extrabold text-on-surface tracking-tight">IELTS Listening: Mastering Map Labeling</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl">استراتيجيات متقدمة لحل خرائط الاستماع والتعامل مع الاتجاهات المعقدة في اختبار الآيلتس.</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-outline-variant/15 flex items-center gap-6">
+<div class="text-right">
+<p class="text-xs text-on-surface-variant font-bold uppercase tracking-wider">التقدم الحالي</p>
+<p class="text-3xl font-black text-on-surface">Band 7.5 <span class="text-lg font-medium text-on-surface-variant">تقديري</span></p>
+</div>
+<div class="w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+<span class="material-symbols-outlined text-white text-3xl" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+</div>
+</div>
+<!-- Learning Bento Grid -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Video Player Section -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-xl shadow-purple-100 border-4 border-primary">
+<div class="aspect-video bg-slate-900 relative group">
+<div class="absolute inset-0 flex items-center justify-center">
+<img alt="IELTS Study Background" class="absolute inset-0 w-full h-full object-cover opacity-30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCC54VDtZIpKblwiPwtEmUvszOPhGAPhbg4R2synhMqrX49U5unKHWp29EOU56rCWsmji3eVlZB3inRFrBnURvsut5XW2DafV3PmAGM_dB516ahXos_IwIqmbSfFEXo75goHQ3vCACPlOgA9F60xYKRblh-5LoeyW-S7DEYOYKVfT25aM_lAUXbLppkWULG49rv3H2_1ZV1m23_mkQKON6O8WSsjiKFMmonyv8XACzU6mWTd8PwZFU785bXbraadOqhNieQFw3bmhs"/>
+<button class="z-10 w-20 h-20 bg-primary text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent flex justify-between items-center text-white">
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 bg-primary text-xs font-bold rounded">WATCHING</span>
+<span class="font-medium">الدرس 12: استراتيجيات تحديد المواقع في الخريطة</span>
+</div>
+<span class="text-sm opacity-80">15:20 / 32:45</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="flex-1 py-4 bg-surface-container-highest text-primary rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">audio_file</span>
+                            تحميل ملفات الصوت
+                        </button>
+<button class="flex-1 py-4 bg-surface-container-highest text-primary rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">edit_note</span>
+                            تطبيق القواعد اللغوية
+                        </button>
+</div>
+</div>
+<!-- Practice & Exam Section -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-surface-container-lowest rounded-3xl p-6 shadow-sm border-2 border-primary/20 flex flex-col h-full">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">timer</span>
+</div>
+<div>
+<h3 class="font-bold text-lg">اختبار محاكي</h3>
+<p class="text-xs text-on-surface-variant">قسم الاستماع - 30 دقيقة</p>
+</div>
+</div>
+<div class="flex-1 min-h-[400px] bg-purple-50 rounded-xl border-2 border-dashed border-primary/40 relative overflow-hidden">
+<div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center space-y-4">
+<span class="material-symbols-outlined text-6xl text-primary/40">headphones</span>
+<h4 class="font-bold text-on-surface">Listening Practice Test 14</h4>
+<p class="text-sm text-on-surface-variant">يحتوي هذا الاختبار على 4 أقسام تغطي مواضيع اجتماعية وأكاديمية متنوعة.</p>
+<button class="px-8 py-3 bg-primary text-white rounded-full font-bold shadow-lg shadow-purple-500/20">بدء اختبار الاستماع</button>
+</div>
+</div>
+<div class="mt-6 p-4 bg-purple-100/50 rounded-xl flex items-center gap-4 border border-primary/10">
+<span class="material-symbols-outlined text-primary">tips_and_updates</span>
+<p class="text-xs text-purple-900 leading-relaxed">تذكر: استخدم القلم الرصاص وقم بنقل الإجابات بدقة في نهاية الاختبار.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Editorial Section -->
+<section class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-primary/5 p-6 rounded-3xl border border-primary/10">
+<span class="material-symbols-outlined text-primary mb-2">insights</span>
+<h4 class="font-bold text-on-surface mb-1">تحليل الأداء (AI)</h4>
+<p class="text-sm text-on-surface-variant">تحتاج لزيادة سرعتك في قسم "Matching Info". تدرب أكثر على المترادفات.</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-3xl border border-outline-variant/15 flex items-center gap-4">
+<div class="w-12 h-12 bg-purple-100 text-primary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">forum</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant">مجتمع الطلاب</p>
+<p class="font-bold">450 طالب يتدربون الآن</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-3xl border border-outline-variant/15 flex items-center gap-4">
+<div class="w-12 h-12 bg-purple-100 text-primary rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">event</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant">تاريخ الاختبار الرسمي</p>
+<p class="font-bold">25 سبتمبر 2024</p>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>
