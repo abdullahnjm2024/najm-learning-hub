@@ -228,5 +228,55 @@ router.post("/webhooks/exam-score", async (req, res) => {
       : "تم تسجيل الدرجة (نتيجة مراجعة).",
   });
 });
+// ── باب استقبال وتأسيس الاختبارات من جوجل شيت ─────────────
+router.post("/webhook/sync-exam", async (req, res) => {
+  const secret = req.headers["x-webhook-secret"] || req.query.secret;
+  if (!isValidWebhookSecret(secret as string)) {
+    res.status(401).json({ error: "unauthorized", message: "Invalid webhook secret" });
+    return;
+  }
 
+  const { quizCode, titleAr, googleFormUrl, starsReward, gradeLevel } = req.body;
+
+  if (!quizCode || !titleAr) {
+    res.status(400).json({ error: "bad_request", message: "quizCode and titleAr are required" });
+    return;
+  }
+
+  try {
+    // التحقق مما إذا كان الاختبار موجوداً مسبقاً
+    const [existingExam] = await db.select().from(examsTable).where(eq(examsTable.quizCode, String(quizCode))).limit(1);
+
+    if (existingExam) {
+      // تحديث بيانات الاختبار إذا كان موجوداً (لتحديث الروابط أو النجوم)
+      await db.update(examsTable)
+        .set({
+          titleAr: titleAr,
+          title: titleAr, // احتياطياً
+          googleFormUrl: googleFormUrl || existingExam.googleFormUrl,
+          starsReward: Number(starsReward) || existingExam.starsReward,
+          gradeLevel: gradeLevel || existingExam.gradeLevel
+        })
+        .where(eq(examsTable.id, existingExam.id));
+
+      res.json({ success: true, message: `تم تحديث الاختبار: ${quizCode}` });
+    } else {
+      // إنشاء الاختبار الجديد
+      await db.insert(examsTable).values({
+        quizCode: String(quizCode),
+        titleAr: String(titleAr),
+        title: String(titleAr),
+        googleFormUrl: googleFormUrl || "",
+        starsReward: Number(starsReward) || 10,
+        gradeLevel: gradeLevel || "grade9",
+        accessLevel: "free" // وصول مجاني افتراضياً
+      });
+
+      res.json({ success: true, message: `تم إنشاء الاختبار: ${quizCode}` });
+    }
+  } catch (error: any) {
+    console.error("Error syncing exam:", error);
+    res.status(500).json({ error: "server_error", message: error.message });
+  }
+});
 export default router;
