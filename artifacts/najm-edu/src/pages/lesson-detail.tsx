@@ -549,7 +549,7 @@ export default function LessonDetail({ params }: Props) {
               >
                 {verifyLoading
                   ? <><Loader2 className="w-4 h-4 animate-spin" /> جاري التحقق...</>
-                  : <><RefreshCw className="w-4 h-4" /> أنهيت الاختبار، تحقق من النتيجة</>}
+                  : <><RefreshCw className="w-4 h-4" /> أنهيت وأرسلت الاختبار؟ انتظر 5 ثوانٍ ثم تحقق من النتيجة ⏳</>}
               </button>
 
               <p className="text-xs text-muted-foreground text-center leading-relaxed">
