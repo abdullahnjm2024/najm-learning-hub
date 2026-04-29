@@ -45,7 +45,7 @@ function useSubjectProgress(subjectId: number | null) {
 }
 
 export default function Lessons() {
-  const { user, isPaidForSubject } = useAuth();
+  const { user, isPaidForSubject, isPaid } = useAuth();
   const grade = user?.gradeLevel || "grade9";
   const theme = GRADE_CONFIG[grade] ?? ADMIN_THEME;
   const qc = useQueryClient();
@@ -58,7 +58,7 @@ export default function Lessons() {
   const { data: lessons = [], isLoading: loadingLessons } = useUnitLessons(expandedUnit);
   const { data: subjectProgress } = useSubjectProgress(activeSubject?.id ?? null);
 
-  const isSubjectPaid = activeSubject ? isPaidForSubject(activeSubject.id) : false;
+  const isSubjectPaid = activeSubject ? (isPaid || isPaidForSubject(activeSubject.id)) : false;
 
   const markComplete = useMutation({
     mutationFn: (lessonId: number) =>
