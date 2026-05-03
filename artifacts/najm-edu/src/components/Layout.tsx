@@ -115,19 +115,27 @@ function OnboardingModal({ theme, onDone }: { theme: typeof ADMIN_THEME; onDone:
   );
 }
 
+type BannerMode = "install" | "ios" | null;
+
 function InstallBanner() {
   const deferredPrompt = useRef<any>(null);
-  const [visible, setVisible] = useState(false);
+  const [mode, setMode] = useState<BannerMode>(null);
 
   useEffect(() => {
     const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
     const hidden = sessionStorage.getItem(INSTALL_HIDE_KEY);
     if (isStandalone || hidden) return;
 
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isIOS) {
+      setMode("ios");
+      return;
+    }
+
     const handler = (e: Event) => {
       e.preventDefault();
       deferredPrompt.current = e;
-      setVisible(true);
+      setMode("install");
     };
 
     window.addEventListener("beforeinstallprompt", handler);
@@ -139,30 +147,31 @@ function InstallBanner() {
     deferredPrompt.current.prompt();
     await deferredPrompt.current.userChoice;
     deferredPrompt.current = null;
-    setVisible(false);
+    setMode(null);
   };
 
   const handleDismiss = () => {
     sessionStorage.setItem(INSTALL_HIDE_KEY, "true");
-    setVisible(false);
+    setMode(null);
   };
 
-  if (!visible) return null;
+  if (!mode) return null;
 
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-50 p-3"
-      dir="rtl"
-    >
-      <div className="max-w-lg mx-auto rounded-2xl shadow-2xl overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #1d2b49, #2d4070)" }}>
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-3" dir="rtl">
+      <div
+        className="max-w-lg mx-auto rounded-2xl shadow-2xl overflow-hidden"
+        style={{ background: "linear-gradient(135deg, #1d2b49, #2d4070)" }}
+      >
         <div className="px-4 py-3 flex items-center gap-3">
-          <div className="text-2xl flex-shrink-0">🚀</div>
+          <div className="text-2xl flex-shrink-0">{mode === "ios" ? "🍏" : "🚀"}</div>
           <p
             className="flex-1 text-white text-sm font-medium leading-snug"
             style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
           >
-            تجربة أفضل وأسرع! قم بتثبيت تطبيق نجم التعليمي على هاتفك.
+            {mode === "ios"
+              ? "مستخدمي آيفون 🍏: لتثبيت التطبيق، اضغط على زر المشاركة بالأسفل ثم اختر 'إضافة للشاشة الرئيسية' 📱."
+              : "تجربة أفضل وأسرع! قم بتثبيت تطبيق نجم التعليمي على هاتفك."}
           </p>
           <button
             onClick={handleDismiss}
@@ -173,16 +182,18 @@ function InstallBanner() {
           </button>
         </div>
         <div className="px-4 pb-3 flex gap-2">
-          <button
-            onClick={handleInstall}
-            className="flex-1 py-2.5 rounded-xl bg-white text-sm font-bold transition-all hover:bg-white/90 active:scale-[0.98]"
-            style={{ color: "#1d2b49", fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
-          >
-            تثبيت التطبيق 📥
-          </button>
+          {mode === "install" && (
+            <button
+              onClick={handleInstall}
+              className="flex-1 py-2.5 rounded-xl bg-white text-sm font-bold transition-all hover:bg-white/90 active:scale-[0.98]"
+              style={{ color: "#1d2b49", fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
+            >
+              تثبيت التطبيق 📥
+            </button>
+          )}
           <button
             onClick={handleDismiss}
-            className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all border border-white/20"
+            className={`py-2.5 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all border border-white/20 ${mode === "ios" ? "flex-1" : "flex-1"}`}
             style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
           >
             ذكرني لاحقاً ⏱️

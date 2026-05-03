@@ -8,6 +8,12 @@ setAuthTokenGetter(() => {
   return localStorage.getItem("najm_token") || localStorage.getItem("najm_staff_token");
 });
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}
+
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
     <App />
