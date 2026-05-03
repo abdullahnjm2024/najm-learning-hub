@@ -1,0 +1,28 @@
+The PWA install banner works perfectly! However, the Onboarding Modal button text is disappearing strictly on Google Chrome (only the emoji renders). We also need to start Phase 3.
+
+Task 1: Fix Chrome Button Bug in `Layout.tsx`
+Update the button inside the Onboarding modal to use explicit Flexbox and spans to force Chrome to render the text in RTL:
+`<button className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-white transition-all hover:opacity-90" style={{ backgroundColor: theme.primary }} onClick={closeAndNavigate}>`
+  `<span className="whitespace-nowrap">الانتقال لملفي الشخصي</span>`
+  `<span>👤</span>`
+`</button>`
+
+Task 2: Phase 3 - Lesson Assignments & Messaging System (Part 1)
+We need to allow students to send text assignments/questions from within a lesson, and view the teacher's replies.
+
+1. Backend & Database:
+   - Update the database schema to include a new table/model called `Submissions` (or similar). It should have: `id`, `studentId`, `lessonId`, `content` (text), `adminReply` (text, nullable), and timestamps (`createdAt`).
+   - Create the necessary Express API endpoints:
+     * `POST /api/submissions`: Allows a student to submit a text message for a specific lesson.
+     * `GET /api/submissions/lesson/:lessonId`: Fetches the current student's submissions and admin replies for that specific lesson.
+     * `GET /api/admin/submissions`: Fetches all submissions across all students.
+     * `PUT /api/admin/submissions/:id/reply`: Allows the admin to update a submission with an `adminReply`.
+
+2. Student UI in `LessonDetail.tsx`:
+   - At the bottom of the `LessonDetail` component, add a new section titled "صندوق الواجبات والاستفسارات 📝".
+   - Add a `textarea` (placeholder: "اكتب إجابتك أو استفسارك هنا...") and a primary button "إرسال 🚀". Add a loading state during submission.
+   - Below the text area, fetch and map over the student's previous submissions for this lesson using the new GET endpoint.
+   - For each submission, show the student's text. If `adminReply` is not null, display the reply directly below it in a distinct box with the title "رد الأستاذ عبد الله 👨‍🏫" (use a soft green/blue background).
+   - Ensure everything is RTL, styled with Tailwind to match the existing theme, and strictly in Arabic.
+
+Please apply the Chrome fix and implement the Phase 3 backend/frontend updates cleanly.

@@ -10,3 +10,4 @@ export * from "./lesson_progress";
 export * from "./site_settings";
 export * from "./prizes";
 export * from "./staff";
+export * from "./submissions";

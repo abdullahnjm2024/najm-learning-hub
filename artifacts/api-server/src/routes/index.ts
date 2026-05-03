@@ -18,6 +18,7 @@ import siteSettingsRouter from "./site_settings";
 import prizesRouter from "./prizes";
 import staffAuthRouter from "./staff_auth";
 import staffManagementRouter from "./staff_management";
+import submissionsRouter from "./submissions";
 
 const router: IRouter = Router();
 
@@ -40,5 +41,6 @@ router.use(siteSettingsRouter);
 router.use(prizesRouter);
 router.use(staffAuthRouter);
 router.use(staffManagementRouter);
+router.use(submissionsRouter);
 
 export default router;

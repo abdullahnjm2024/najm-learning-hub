@@ -101,13 +101,14 @@ function OnboardingModal({ theme, onDone }: { theme: typeof ADMIN_THEME; onDone:
         <div className="px-6 pb-6">
           <button
             onClick={handleGo}
-            className="w-full py-3.5 rounded-xl text-white font-bold text-base transition-all hover:opacity-90 active:scale-[0.98] shadow-md"
+            className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-base text-white transition-all hover:opacity-90 active:scale-[0.98] shadow-md"
             style={{
               background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)`,
               fontFamily: "'IBM Plex Sans Arabic', sans-serif",
             }}
           >
-            الانتقال لملفي الشخصي 👤
+            <span className="whitespace-nowrap">الانتقال لملفي الشخصي</span>
+            <span>👤</span>
           </button>
         </div>
       </div>

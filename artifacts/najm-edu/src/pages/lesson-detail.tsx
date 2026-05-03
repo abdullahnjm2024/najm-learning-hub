@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Layout } from "@/components/Layout";
 import { GRADE_CONFIG, ADMIN_THEME, getYouTubeEmbedUrl, getApiBaseUrl } from "@/lib/utils";
@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Lock, Loader2, ChevronLeft, PlayCircle, Headphones, FileText,
   Image as ImageIcon, ClipboardList, CheckCircle2, AlertCircle, ExternalLink,
-  X, RefreshCw
+  X, RefreshCw, Send, MessageSquare
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -33,6 +33,8 @@ export default function LessonDetail({ params }: Props) {
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [localScore, setLocalScore] = useState<number | null>(null);
   const [localPassed, setLocalPassed] = useState(false);
+  const [submissionText, setSubmissionText] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { data: lesson, isLoading } = useQuery({
     queryKey: ["lesson", lessonId],
@@ -56,6 +58,29 @@ export default function LessonDetail({ params }: Props) {
     queryKey: ["exam", lessonData?.quizId],
     queryFn: () => authFetch(`${API}/exams/${lessonData?.quizId}`),
     enabled: hasQuiz,
+  });
+
+  const { data: submissions = [], refetch: refetchSubmissions } = useQuery({
+    queryKey: ["submissions", lessonId],
+    queryFn: () => authFetch(`${API}/submissions/lesson/${lessonId}`),
+    enabled: !isNaN(lessonId),
+  });
+
+  const submitAssignment = useMutation({
+    mutationFn: () =>
+      fetch(`${API}/submissions`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${tok()}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ lessonId, content: submissionText.trim() }),
+      }).then(r => { if (!r.ok) throw new Error("فشل الإرسال"); return r.json(); }),
+    onSuccess: () => {
+      setSubmissionText("");
+      refetchSubmissions();
+      toast({ title: "تم الإرسال ✅", description: "وصل واجبك واستفسارك للأستاذ عبد الله" });
+    },
+    onError: () => {
+      toast({ title: "خطأ في الإرسال", description: "لم يتم إرسال الواجب، حاول مجدداً", variant: "destructive" });
+    },
   });
 
   const markComplete = useMutation({
@@ -466,6 +491,90 @@ export default function LessonDetail({ params }: Props) {
             >
               <ChevronLeft className="w-4 h-4" /><span>جميع الدروس</span>
             </Link>
+          </div>
+        </div>
+      )}
+
+      {!isAccessLocked && (
+        <div className="mt-6 rounded-2xl bg-card border border-card-border overflow-hidden" dir="rtl">
+          <div
+            className="px-5 py-4 flex items-center gap-3"
+            style={{ background: `linear-gradient(135deg, ${theme.gradientFrom} 0%, rgba(244,246,255,0.3) 100%)` }}
+          >
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: theme.primaryLight }}>
+              <MessageSquare className="w-5 h-5" style={{ color: theme.primary }} />
+            </div>
+            <div>
+              <h3 className="font-bold text-foreground text-base" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
+                صندوق الواجبات والاستفسارات 📝
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">أرسل إجابتك أو استفسارك للأستاذ عبد الله مباشرةً</p>
+            </div>
+          </div>
+
+          <div className="p-5 space-y-4">
+            <div className="space-y-3">
+              <textarea
+                ref={textareaRef}
+                value={submissionText}
+                onChange={e => setSubmissionText(e.target.value)}
+                placeholder="اكتب إجابتك أو استفسارك هنا..."
+                rows={4}
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 leading-relaxed"
+                style={{
+                  fontFamily: "'IBM Plex Sans Arabic', sans-serif",
+                  focusRingColor: theme.primary,
+                } as React.CSSProperties}
+                onFocus={e => { e.currentTarget.style.boxShadow = `0 0 0 2px ${theme.primary}40`; }}
+                onBlur={e => { e.currentTarget.style.boxShadow = "none"; }}
+                disabled={submitAssignment.isPending}
+              />
+              <button
+                onClick={() => { if (submissionText.trim()) submitAssignment.mutate(); }}
+                disabled={!submissionText.trim() || submitAssignment.isPending}
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-white text-sm transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ background: theme.primary, fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
+              >
+                {submitAssignment.isPending
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /><span>جاري الإرسال...</span></>
+                  : <><Send className="w-4 h-4" /><span>إرسال 🚀</span></>}
+              </button>
+            </div>
+
+            {(submissions as any[]).length > 0 && (
+              <div className="space-y-3 pt-2 border-t border-border">
+                <h4 className="text-sm font-bold text-foreground" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
+                  مراسلاتي السابقة ({(submissions as any[]).length})
+                </h4>
+                {(submissions as any[]).map((sub: any) => (
+                  <div key={sub.id} className="space-y-2">
+                    <div className="rounded-xl p-4 border border-border bg-muted/40">
+                      <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
+                        {sub.content}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {new Date(sub.createdAt).toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                    </div>
+                    {sub.adminReply && (
+                      <div
+                        className="rounded-xl p-4 border"
+                        style={{ background: "rgba(16,185,129,0.06)", borderColor: "rgba(16,185,129,0.2)" }}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
+                            رد الأستاذ عبد الله 👨‍🏫
+                          </span>
+                        </div>
+                        <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
+                          {sub.adminReply}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
