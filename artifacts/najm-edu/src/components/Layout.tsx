@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { useListNotifications, getListNotificationsQueryKey } from "@workspace/api-client-react";
 
+const ONBOARDING_KEY = "has_seen_onboarding";
+
 const studentNav = [
   { path: "/", label: "الرئيسية", icon: Home },
   { path: "/lessons", label: "الدروس", icon: BookOpen },
@@ -35,11 +37,91 @@ const teacherNav = [
 
 const staffManagementTab = { path: "/admin/staff-management", label: "إدارة الكادر الإداري", icon: Shield };
 
+function OnboardingModal({ theme, onDone }: { theme: typeof ADMIN_THEME; onDone: () => void }) {
+  const [, navigate] = useLocation();
+
+  const handleGo = () => {
+    localStorage.setItem(ONBOARDING_KEY, "true");
+    onDone();
+    navigate("/profile");
+  };
+
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4" dir="rtl">
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={handleGo}
+      />
+      <div className="relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
+        style={{ background: "#ffffff" }}>
+        <div
+          className="px-6 pt-6 pb-4 flex items-center gap-3"
+          style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)` }}
+        >
+          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl flex-shrink-0">
+            🌟
+          </div>
+          <h2
+            className="text-xl font-bold text-white leading-snug"
+            style={{ fontFamily: "'Plus Jakarta Sans', 'IBM Plex Sans Arabic', sans-serif" }}
+          >
+            خطوتان فقط للبدء!
+          </h2>
+        </div>
+
+        <div className="px-6 py-5 space-y-4">
+          <p className="text-foreground text-sm leading-relaxed" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
+            أهلاً بك! بقي فقط خطوتين صغيرتين لكي تكمل تجهيز حسابك بشكل نهائي:
+          </p>
+
+          <div className="space-y-3">
+            <div className="flex items-start gap-3 p-3 rounded-xl" style={{ background: theme.primaryLight }}>
+              <span
+                className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 mt-0.5"
+                style={{ background: theme.primary }}
+              >
+                ١
+              </span>
+              <p className="text-sm font-medium text-foreground leading-relaxed" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
+                تغيير كلمة السر الخاصة بك
+              </p>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 rounded-xl" style={{ background: theme.primaryLight }}>
+              <span
+                className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 mt-0.5"
+                style={{ background: theme.primary }}
+              >
+                ٢
+              </span>
+              <p className="text-sm font-medium text-foreground leading-relaxed" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
+                تفعيل الإشعارات لتصلك علاماتك وإعلانات الدروس
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-6 pb-6">
+          <button
+            onClick={handleGo}
+            className="w-full py-3 rounded-xl text-white font-bold text-base transition-all hover:opacity-90 active:scale-[0.98] shadow-md flex items-center justify-center gap-2"
+            style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)`, fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
+          >
+            <span>الذهاب لملفي الشخصي</span>
+            <span>👤</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout: userLogout, isAdmin } = useAuth();
   const { staff, logout: staffLogout, isSuperAdmin, isTeacher, isSupervisor } = useStaffAuth();
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const { data: notifications } = useListNotifications({ query: { queryKey: getListNotificationsQueryKey(), retry: false, enabled: !!user } });
 
   const unreadCount = Array.isArray(notifications) ? notifications.filter((n: any) => !n.isRead).length : 0;
@@ -81,6 +163,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
     }
     return () => el.removeAttribute("data-grade");
   }, [user?.gradeLevel, isAdminView]);
+
+  useEffect(() => {
+    if (user && !isAdminView) {
+      const seen = localStorage.getItem(ONBOARDING_KEY);
+      if (!seen) {
+        setShowOnboarding(true);
+      }
+    }
+  }, [user, isAdminView]);
 
   const handleLogout = () => {
     staffLogout();
@@ -172,6 +263,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: theme.surface }}>
+      {showOnboarding && (
+        <OnboardingModal theme={theme} onDone={() => setShowOnboarding(false)} />
+      )}
+
       {/* Desktop Sidebar — Fixed right */}
       <aside className="hidden lg:flex flex-col w-64 bg-sidebar fixed right-0 top-0 h-full z-30 shadow-tonal">
         <SidebarContent />
