@@ -122,24 +122,35 @@ function InstallBanner() {
   const [mode, setMode] = useState<BannerMode>(null);
 
   useEffect(() => {
-    const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
-    const hidden = sessionStorage.getItem(INSTALL_HIDE_KEY);
+    const params = new URLSearchParams(window.location.search);
+    const forceDebug = params.get("force_pwa") === "1";
+
+    const isStandalone = !forceDebug && window.matchMedia("(display-mode: standalone)").matches;
+    const hidden = !forceDebug && sessionStorage.getItem(INSTALL_HIDE_KEY);
     if (isStandalone || hidden) return;
 
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if (isIOS) {
+    if (isIOS && !forceDebug) {
       setMode("ios");
       return;
     }
 
-    const handler = (e: Event) => {
-      e.preventDefault();
-      deferredPrompt.current = e;
-      setMode("install");
+    const activate = () => {
+      const stored = (window as any).deferredPrompt;
+      if (stored) {
+        deferredPrompt.current = stored;
+        setMode("install");
+      } else if (forceDebug) {
+        setMode("install");
+      }
     };
 
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    if ((window as any).deferredPrompt || forceDebug) {
+      activate();
+    } else {
+      window.addEventListener("pwa-prompt-ready", activate);
+      return () => window.removeEventListener("pwa-prompt-ready", activate);
+    }
   }, []);
 
   const handleInstall = async () => {

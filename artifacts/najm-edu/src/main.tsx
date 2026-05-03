@@ -17,6 +17,12 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  (window as any).deferredPrompt = e;
+  window.dispatchEvent(new Event("pwa-prompt-ready"));
+});
+
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
     <App />
