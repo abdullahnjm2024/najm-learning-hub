@@ -15,7 +15,7 @@
       "src": "/najm-logo.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/najm-logo.png",
