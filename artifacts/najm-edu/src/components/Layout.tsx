@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { useStaffAuth } from "@/contexts/StaffAuthContext";
@@ -10,6 +10,7 @@ import {
 import { useListNotifications, getListNotificationsQueryKey } from "@workspace/api-client-react";
 
 const ONBOARDING_KEY = "has_seen_onboarding";
+const INSTALL_HIDE_KEY = "hide_install_prompt";
 
 const studentNav = [
   { path: "/", label: "الرئيسية", icon: Home },
@@ -48,12 +49,8 @@ function OnboardingModal({ theme, onDone }: { theme: typeof ADMIN_THEME; onDone:
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4" dir="rtl">
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={handleGo}
-      />
-      <div className="relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
-        style={{ background: "#ffffff" }}>
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleGo} />
+      <div className="relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden bg-white">
         <div
           className="px-6 pt-6 pb-4 flex items-center gap-3"
           style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)` }}
@@ -104,11 +101,91 @@ function OnboardingModal({ theme, onDone }: { theme: typeof ADMIN_THEME; onDone:
         <div className="px-6 pb-6">
           <button
             onClick={handleGo}
-            className="w-full py-3 rounded-xl text-white font-bold text-base transition-all hover:opacity-90 active:scale-[0.98] shadow-md flex items-center justify-center gap-2"
-            style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)`, fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
+            className="w-full py-3.5 rounded-xl text-white font-bold text-base transition-all hover:opacity-90 active:scale-[0.98] shadow-md"
+            style={{
+              background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)`,
+              fontFamily: "'IBM Plex Sans Arabic', sans-serif",
+            }}
           >
-            <span>الذهاب لملفي الشخصي</span>
-            <span>👤</span>
+            الانتقال لملفي الشخصي 👤
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InstallBanner() {
+  const deferredPrompt = useRef<any>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+    const hidden = sessionStorage.getItem(INSTALL_HIDE_KEY);
+    if (isStandalone || hidden) return;
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      deferredPrompt.current = e;
+      setVisible(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt.current) return;
+    deferredPrompt.current.prompt();
+    await deferredPrompt.current.userChoice;
+    deferredPrompt.current = null;
+    setVisible(false);
+  };
+
+  const handleDismiss = () => {
+    sessionStorage.setItem(INSTALL_HIDE_KEY, "true");
+    setVisible(false);
+  };
+
+  if (!visible) return null;
+
+  return (
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50 p-3"
+      dir="rtl"
+    >
+      <div className="max-w-lg mx-auto rounded-2xl shadow-2xl overflow-hidden"
+        style={{ background: "linear-gradient(135deg, #1d2b49, #2d4070)" }}>
+        <div className="px-4 py-3 flex items-center gap-3">
+          <div className="text-2xl flex-shrink-0">🚀</div>
+          <p
+            className="flex-1 text-white text-sm font-medium leading-snug"
+            style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
+          >
+            تجربة أفضل وأسرع! قم بتثبيت تطبيق نجم التعليمي على هاتفك.
+          </p>
+          <button
+            onClick={handleDismiss}
+            className="p-1 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all flex-shrink-0"
+            aria-label="إغلاق"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="px-4 pb-3 flex gap-2">
+          <button
+            onClick={handleInstall}
+            className="flex-1 py-2.5 rounded-xl bg-white text-sm font-bold transition-all hover:bg-white/90 active:scale-[0.98]"
+            style={{ color: "#1d2b49", fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
+          >
+            تثبيت التطبيق 📥
+          </button>
+          <button
+            onClick={handleDismiss}
+            className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all border border-white/20"
+            style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
+          >
+            ذكرني لاحقاً ⏱️
           </button>
         </div>
       </div>
@@ -166,8 +243,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (user && !isAdminView) {
-      const seen = localStorage.getItem(ONBOARDING_KEY);
-      if (!seen) {
+      if (!localStorage.getItem(ONBOARDING_KEY)) {
         setShowOnboarding(true);
       }
     }
@@ -267,15 +343,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <OnboardingModal theme={theme} onDone={() => setShowOnboarding(false)} />
       )}
 
+      <InstallBanner />
+
       {/* Desktop Sidebar — Fixed right */}
       <aside className="hidden lg:flex flex-col w-64 bg-sidebar fixed right-0 top-0 h-full z-30 shadow-tonal">
         <SidebarContent />
       </aside>
 
       {/* Mobile Header */}
-      <header
-        className="lg:hidden fixed top-0 left-0 right-0 z-40 glass-nav shadow-sm flex items-center justify-between px-4 h-14"
-      >
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 glass-nav shadow-sm flex items-center justify-between px-4 h-14">
         <button
           onClick={() => setMobileOpen(true)}
           className="p-2 rounded-xl hover:bg-sidebar-accent transition-all"
