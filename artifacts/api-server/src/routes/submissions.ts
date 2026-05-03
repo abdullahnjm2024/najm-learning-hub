@@ -2,8 +2,7 @@ import { Router } from "express";
 import { db } from "@workspace/db";
 import { submissionsTable } from "@workspace/db";
 import { eq, and, desc } from "drizzle-orm";
-import { authenticate, type AuthenticatedRequest } from "../middlewares/authenticate";
-import { authenticateStaff, type StaffAuthenticatedRequest } from "../middlewares/authenticateStaff";
+import { authenticate, authenticateStaff, type AuthenticatedRequest, type StaffAuthenticatedRequest } from "../middlewares/authenticate";
 
 const router = Router();
 
