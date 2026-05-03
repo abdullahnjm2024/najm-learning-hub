@@ -17,6 +17,7 @@ export const notificationsTable = pgTable("notifications", {
   bodyAr: text("body_ar").notNull(),
   type: notificationTypeEnum("type").notNull(),
   gradeLevel: text("grade_level"),
+  link: text("link"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
