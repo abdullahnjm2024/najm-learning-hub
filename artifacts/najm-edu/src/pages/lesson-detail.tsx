@@ -546,33 +546,46 @@ export default function LessonDetail({ params }: Props) {
                 <h4 className="text-sm font-bold text-foreground" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
                   مراسلاتي السابقة ({(submissions as any[]).length})
                 </h4>
-                {(submissions as any[]).map((sub: any) => (
-                  <div key={sub.id} className="space-y-2">
-                    <div className="rounded-xl p-4 border border-border bg-muted/40">
-                      <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
-                        {sub.content}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {new Date(sub.createdAt).toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-                      </p>
-                    </div>
-                    {sub.adminReply && (
-                      <div
-                        className="rounded-xl p-4 border"
-                        style={{ background: "rgba(16,185,129,0.06)", borderColor: "rgba(16,185,129,0.2)" }}
-                      >
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
-                            رد الأستاذ عبد الله 👨‍🏫
-                          </span>
-                        </div>
+                {(submissions as any[]).map((sub: any) => {
+                  const isNewReply = !!sub.adminReply &&
+                    new Date(sub.updatedAt).getTime() > new Date(sub.createdAt).getTime() + 5000;
+                  return (
+                    <div key={sub.id} className="space-y-2">
+                      <div className="rounded-xl p-4 border border-border bg-muted/40">
                         <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
-                          {sub.adminReply}
+                          {sub.content}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {new Date(sub.createdAt).toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                         </p>
                       </div>
-                    )}
-                  </div>
-                ))}
+                      {sub.adminReply && (
+                        <div
+                          className="rounded-xl p-4 border transition-all"
+                          style={{
+                            background: isNewReply ? "rgba(16,185,129,0.10)" : "rgba(16,185,129,0.06)",
+                            borderColor: isNewReply ? "rgba(16,185,129,0.4)" : "rgba(16,185,129,0.2)",
+                            boxShadow: isNewReply ? "0 0 0 2px rgba(16,185,129,0.15)" : "none",
+                          }}
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
+                              رد الأستاذ عبد الله 👨‍🏫
+                            </span>
+                            {isNewReply && (
+                              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+                                جديد ✨
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
+                            {sub.adminReply}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

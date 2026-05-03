@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
-import { submissionsTable } from "@workspace/db";
+import { submissionsTable, usersTable, lessonsTable } from "@workspace/db";
 import { eq, and, desc } from "drizzle-orm";
 import { authenticate, authenticateStaff, type AuthenticatedRequest, type StaffAuthenticatedRequest } from "../middlewares/authenticate";
 
@@ -43,12 +43,26 @@ router.get("/submissions/lesson/:lessonId", authenticate, async (req: Authentica
 });
 
 router.get("/admin/submissions", authenticateStaff, async (_req: StaffAuthenticatedRequest, res): Promise<void> => {
-  const submissions = await db
-    .select()
+  const rows = await db
+    .select({
+      id: submissionsTable.id,
+      content: submissionsTable.content,
+      adminReply: submissionsTable.adminReply,
+      createdAt: submissionsTable.createdAt,
+      updatedAt: submissionsTable.updatedAt,
+      lessonId: submissionsTable.lessonId,
+      studentId: submissionsTable.studentId,
+      studentName: usersTable.fullName,
+      studentCode: usersTable.studentId,
+      gradeLevel: usersTable.gradeLevel,
+      lessonTitle: lessonsTable.titleAr,
+    })
     .from(submissionsTable)
+    .leftJoin(usersTable, eq(submissionsTable.studentId, usersTable.id))
+    .leftJoin(lessonsTable, eq(submissionsTable.lessonId, lessonsTable.id))
     .orderBy(desc(submissionsTable.createdAt));
 
-  res.json(submissions);
+  res.json(rows);
 });
 
 router.put("/admin/submissions/:id/reply", authenticateStaff, async (req: StaffAuthenticatedRequest, res): Promise<void> => {

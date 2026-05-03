@@ -5,7 +5,7 @@ import { useStaffAuth } from "@/contexts/StaffAuthContext";
 import { GRADE_CONFIG, ADMIN_THEME } from "@/lib/utils";
 import {
   Home, BookOpen, Trophy, Bell, User, LogOut, Menu, X,
-  LayoutDashboard, Users, ClipboardList, Send, Layers, Settings, Shield
+  LayoutDashboard, Users, ClipboardList, Send, Layers, Settings, Shield, MessageSquare
 } from "lucide-react";
 import { useListNotifications, getListNotificationsQueryKey } from "@workspace/api-client-react";
 
@@ -25,6 +25,7 @@ const adminNav = [
   { path: "/admin/students", label: "الطلاب", icon: Users },
   { path: "/admin/subjects", label: "المواد (LMS v2)", icon: Layers },
   { path: "/admin/exams", label: "إدارة الاختبارات", icon: ClipboardList },
+  { path: "/admin/submissions", label: "رسائل الطلاب", icon: MessageSquare },
   { path: "/admin/notifications", label: "الإشعارات", icon: Send },
   { path: "/admin/site-settings", label: "إعدادات الموقع", icon: Settings },
 ];
@@ -34,6 +35,7 @@ const teacherNav = [
   { path: "/admin/students", label: "طلابي", icon: Users },
   { path: "/admin/subjects", label: "موادي", icon: Layers },
   { path: "/admin/exams", label: "الاختبارات", icon: ClipboardList },
+  { path: "/admin/submissions", label: "رسائل الطلاب", icon: MessageSquare },
 ];
 
 const staffManagementTab = { path: "/admin/staff-management", label: "إدارة الكادر الإداري", icon: Shield };

@@ -24,6 +24,7 @@ import AdminSubjects from "@/pages/admin/subjects";
 import AdminSiteSettings from "@/pages/admin/site-settings";
 import StaffManagement from "@/pages/super-admin/staff-management";
 import TeacherDashboard from "@/pages/teacher/dashboard";
+import AdminSubmissions from "@/pages/admin/submissions";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -187,6 +188,9 @@ function Router() {
       </Route>
       <Route path="/admin/notifications">
         <ProtectedRoute component={AdminNotifications} adminOnly />
+      </Route>
+      <Route path="/admin/submissions">
+        <ProtectedRoute component={AdminSubmissions} adminOnly allowTeacher />
       </Route>
       <Route path="/admin/site-settings">
         <ProtectedRoute component={AdminSiteSettings} adminOnly />
