@@ -18,7 +18,10 @@ export default function Profile() {
 
   const rankData = myRank as any;
 
-  const { permission, isSubscribed, isLoading: pushLoading, isSupported, subscribe, unsubscribe } = usePushNotifications(token);
+  const { permission, isSubscribed, isLoading: pushLoading, isSupported, subscribe, unsubscribe } = usePushNotifications(token, {
+    onError: (msg) => toast({ title: "تعذّر تفعيل الإشعارات", description: msg, variant: "destructive" }),
+    onSuccess: () => toast({ title: "تم تفعيل الإشعارات ✓", description: "ستتلقى إشعارات فورية عند رد الأستاذ على استفساراتك." }),
+  });
 
   // Change Password state
   const [pwForm, setPwForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
