@@ -38,7 +38,7 @@ async function pushToStaff(roles: ("teacher" | "supervisor" | "super_admin")[], 
       .where(inArray(staffPushSubscriptionsTable.staffId, staffIds));
     if (subs.length === 0) return;
 
-    const payload = JSON.stringify({ title, body, icon: "/favicon.svg", data: { url } });
+    const payload = JSON.stringify({ title, body, icon: "/najm-logo.png", data: { url } });
     await Promise.allSettled(
       subs.map(sub =>
         firePush(sub.endpoint, sub.p256dhKey, sub.authKey, payload).catch(async (err: any) => {
@@ -62,7 +62,7 @@ async function pushToStudent(userId: number, title: string, body: string, url: s
     console.log(`[push] student ${userId}: found ${subs.length} subscription(s)`);
     if (subs.length === 0) return;
 
-    const payload = JSON.stringify({ title, body, icon: "/favicon.svg", data: { url } });
+    const payload = JSON.stringify({ title, body, icon: "/najm-logo.png", data: { url } });
     const results = await Promise.allSettled(
       subs.map(sub =>
         firePush(sub.endpoint, sub.p256dhKey, sub.authKey, payload).catch(async (err: any) => {
@@ -82,7 +82,7 @@ async function pushToStudent(userId: number, title: string, body: string, url: s
 router.post("/submissions", authenticate, async (req: AuthenticatedRequest, res): Promise<void> => {
   const studentId = req.user!.id;
   const studentName = req.user!.fullName;
-  const { lessonId, content } = req.body ?? {};
+  const { lessonId, content, imageData } = req.body ?? {};
 
   if (!lessonId || !content?.trim()) {
     res.status(400).json({ error: "validation_error", message: "lessonId and content are required" });
@@ -93,6 +93,7 @@ router.post("/submissions", authenticate, async (req: AuthenticatedRequest, res)
     studentId,
     lessonId: Number(lessonId),
     content: content.trim(),
+    imageData: imageData ?? null,
   }).returning();
 
   res.status(201).json(submission);
@@ -138,6 +139,7 @@ router.get("/admin/submissions", authenticateStaff, async (_req: StaffAuthentica
       id: submissionsTable.id,
       content: submissionsTable.content,
       adminReply: submissionsTable.adminReply,
+      imageData: submissionsTable.imageData,
       createdAt: submissionsTable.createdAt,
       updatedAt: submissionsTable.updatedAt,
       lessonId: submissionsTable.lessonId,

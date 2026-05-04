@@ -29,6 +29,7 @@ interface Submission {
   id: number;
   content: string;
   adminReply: string | null;
+  imageData: string | null;
   createdAt: string;
   updatedAt: string;
   lessonId: number;
@@ -127,6 +128,11 @@ function SubmissionCard({ sub, theme }: { sub: Submission; theme: typeof ADMIN_T
           >
             {sub.content}
           </p>
+          {sub.imageData && (
+            <div className="mt-3 rounded-lg overflow-hidden border border-border/30">
+              <img src={sub.imageData} alt="مرفق الطالب" className="w-full max-h-64 object-contain bg-white/50" />
+            </div>
+          )}
         </div>
 
         {hasReply && !expanded && (

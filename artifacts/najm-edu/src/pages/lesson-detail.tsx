@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Layout } from "@/components/Layout";
 import { GRADE_CONFIG, ADMIN_THEME, getYouTubeEmbedUrl, getApiBaseUrl } from "@/lib/utils";
@@ -7,9 +7,29 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Lock, Loader2, ChevronLeft, PlayCircle, Headphones, FileText,
   Image as ImageIcon, ClipboardList, CheckCircle2, AlertCircle, ExternalLink,
-  X, RefreshCw, Send, MessageSquare
+  X, RefreshCw, Send, MessageSquare, Camera
 } from "lucide-react";
 import { Link } from "wouter";
+import { celebrate, burstConfetti } from "@/lib/celebrate";
+
+async function compressImageToBase64(file: File, maxPx = 900, quality = 0.65): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
 
 interface Props { params: { id: string } }
 
@@ -34,7 +54,25 @@ export default function LessonDetail({ params }: Props) {
   const [localScore, setLocalScore] = useState<number | null>(null);
   const [localPassed, setLocalPassed] = useState(false);
   const [submissionText, setSubmissionText] = useState("");
+  const [attachedImage, setAttachedImage] = useState<string | null>(null);
+  const [imageCompressing, setImageCompressing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImagePick = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageCompressing(true);
+    try {
+      const base64 = await compressImageToBase64(file);
+      setAttachedImage(base64);
+    } catch {
+      toast({ title: "تعذّر تحميل الصورة", description: "حاول اختيار صورة أخرى", variant: "destructive" });
+    } finally {
+      setImageCompressing(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }, [toast]);
 
   const { data: lesson, isLoading } = useQuery({
     queryKey: ["lesson", lessonId],
@@ -71,10 +109,11 @@ export default function LessonDetail({ params }: Props) {
       fetch(`${API}/submissions`, {
         method: "POST",
         headers: { Authorization: `Bearer ${tok()}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ lessonId, content: submissionText.trim() }),
+        body: JSON.stringify({ lessonId, content: submissionText.trim(), imageData: attachedImage }),
       }).then(r => { if (!r.ok) throw new Error("فشل الإرسال"); return r.json(); }),
     onSuccess: () => {
       setSubmissionText("");
+      setAttachedImage(null);
       refetchSubmissions();
       toast({ title: "تم الإرسال ✅", description: "وصل واجبك واستفسارك للأستاذ عبد الله" });
     },
@@ -90,6 +129,7 @@ export default function LessonDetail({ params }: Props) {
         headers: { Authorization: `Bearer ${tok()}` },
       }).then(r => r.json()),
     onSuccess: () => {
+      burstConfetti();
       qc.invalidateQueries({ queryKey: ["unit-lessons"] });
       qc.invalidateQueries({ queryKey: ["subject-progress"] });
       qc.invalidateQueries({ queryKey: ["lesson-progress-detail", lessonId] });
@@ -128,6 +168,7 @@ export default function LessonDetail({ params }: Props) {
       if (pct >= 70) {
         setLocalPassed(true);
         setShowExamModal(false);
+        celebrate();
 
         // هنا نحدد الرسالة المناسبة بناءً على حالة الطالب
         if (pct > previousBest && previousBest > 0) {
@@ -514,24 +555,62 @@ export default function LessonDetail({ params }: Props) {
 
           <div className="p-5 space-y-4">
             <div className="space-y-3">
-              <textarea
-                ref={textareaRef}
-                value={submissionText}
-                onChange={e => setSubmissionText(e.target.value)}
-                placeholder="اكتب إجابتك أو استفسارك هنا..."
-                rows={4}
-                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 leading-relaxed"
-                style={{
-                  fontFamily: "'IBM Plex Sans Arabic', sans-serif",
-                  focusRingColor: theme.primary,
-                } as React.CSSProperties}
-                onFocus={e => { e.currentTarget.style.boxShadow = `0 0 0 2px ${theme.primary}40`; }}
-                onBlur={e => { e.currentTarget.style.boxShadow = "none"; }}
-                disabled={submitAssignment.isPending}
+              <div className="relative">
+                <textarea
+                  ref={textareaRef}
+                  value={submissionText}
+                  onChange={e => setSubmissionText(e.target.value)}
+                  placeholder="اكتب إجابتك أو استفسارك هنا..."
+                  rows={4}
+                  className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none leading-relaxed"
+                  style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif", paddingBottom: "2.5rem" }}
+                  onFocus={e => { e.currentTarget.style.boxShadow = `0 0 0 2px ${theme.primary}40`; }}
+                  onBlur={e => { e.currentTarget.style.boxShadow = "none"; }}
+                  disabled={submitAssignment.isPending}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={submitAssignment.isPending || imageCompressing}
+                  title="إرفاق صورة"
+                  className="absolute bottom-2 left-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80 disabled:opacity-40"
+                  style={{ background: theme.primaryLight, color: theme.primary }}
+                >
+                  {imageCompressing
+                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    : <Camera className="w-3.5 h-3.5" />}
+                  <span>صورة</span>
+                </button>
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleImagePick}
               />
+
+              {attachedImage && (
+                <div className="relative w-full rounded-xl overflow-hidden border border-border bg-muted/30">
+                  <img src={attachedImage} alt="مرفق" className="w-full max-h-48 object-contain" />
+                  <button
+                    type="button"
+                    onClick={() => setAttachedImage(null)}
+                    className="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/50 flex items-center justify-center hover:bg-black/70 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5 text-white" />
+                  </button>
+                  <span className="absolute bottom-2 right-2 text-[10px] text-white/80 bg-black/40 px-1.5 py-0.5 rounded">
+                    صورة مرفقة
+                  </span>
+                </div>
+              )}
+
               <button
-                onClick={() => { if (submissionText.trim()) submitAssignment.mutate(); }}
-                disabled={!submissionText.trim() || submitAssignment.isPending}
+                onClick={() => { if (submissionText.trim() || attachedImage) submitAssignment.mutate(); }}
+                disabled={(!submissionText.trim() && !attachedImage) || submitAssignment.isPending}
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-white text-sm transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ background: theme.primary, fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
               >
@@ -555,6 +634,11 @@ export default function LessonDetail({ params }: Props) {
                         <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap" style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
                           {sub.content}
                         </p>
+                        {sub.imageData && (
+                          <div className="mt-3 rounded-lg overflow-hidden border border-border">
+                            <img src={sub.imageData} alt="مرفق الطالب" className="w-full max-h-56 object-contain bg-muted/30" />
+                          </div>
+                        )}
                         <p className="text-xs text-muted-foreground mt-2">
                           {new Date(sub.createdAt).toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                         </p>

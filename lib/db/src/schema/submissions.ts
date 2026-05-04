@@ -6,6 +6,7 @@ export const submissionsTable = pgTable("submissions", {
   lessonId: integer("lesson_id").notNull(),
   content: text("content").notNull(),
   adminReply: text("admin_reply"),
+  imageData: text("image_data"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
