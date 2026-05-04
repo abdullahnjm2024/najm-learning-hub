@@ -51,12 +51,15 @@ router.get("/leaderboard/my-rank", authenticate, async (req: AuthenticatedReques
     return;
   }
 
+  const gradeFilter = eq(usersTable.gradeLevel, currentUser.gradeLevel);
+
   const [higherResult] = await db.select({ count: sql<number>`count(*)` })
     .from(usersTable)
-    .where(sql`${usersTable.starsBalance} > ${currentUser.starsBalance}`);
+    .where(and(gradeFilter, sql`${usersTable.starsBalance} > ${currentUser.starsBalance}`));
 
   const [totalResult] = await db.select({ count: sql<number>`count(*)` })
-    .from(usersTable);
+    .from(usersTable)
+    .where(gradeFilter);
 
   const rank = Number(higherResult?.count || 0) + 1;
   const total = Number(totalResult?.count || 0);

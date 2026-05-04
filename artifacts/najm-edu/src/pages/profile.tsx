@@ -105,7 +105,7 @@ export default function Profile() {
         <img src="${mainLogoSrc}" crossorigin="anonymous"
           style="width:108px;height:108px;object-fit:contain;margin-bottom:10px;" />
 
-        <h1 style="font-size:38px;font-weight:900;color:#1e293b;margin:0 0 6px;letter-spacing:1px;white-space:nowrap;">
+        <h1 style="font-size:38px;font-weight:900;color:#1e293b;margin:0 0 6px;letter-spacing:normal;white-space:nowrap;font-family:Arial,Tahoma,'Segoe UI',sans-serif;">
           نظام نجم التعليمي
         </h1>
         <div style="width:220px;height:4px;background:linear-gradient(90deg,${accentColor},#10b981);border-radius:2px;margin:0 auto 18px;"></div>
@@ -158,7 +158,7 @@ export default function Profile() {
       document.body.appendChild(wrapper);
 
       await document.fonts.ready;
-      await new Promise(r => setTimeout(r, 250));
+      await new Promise(r => setTimeout(r, 800));
 
       const certEl = wrapper.firstElementChild as HTMLElement;
       const canvas = await html2canvas(certEl, {
