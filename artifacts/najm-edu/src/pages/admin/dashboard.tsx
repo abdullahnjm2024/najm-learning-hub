@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useGetDashboardStats, useGetGradeSummary, getGetDashboardStatsQueryKey, getGetGradeSummaryQueryKey } from "@workspace/api-client-react";
 import { GRADE_CONFIG, getApiBaseUrl } from "@/lib/utils";
+import { getStaffToken } from "@/contexts/StaffAuthContext";
 import { Users, BookOpen, FileText, BarChart3, UserCheck, UserX, Loader2, Download } from "lucide-react";
 
 const API = getApiBaseUrl();
-const tok = () => localStorage.getItem("najm_token") || "";
 
 export default function AdminDashboard() {
   const [excelLoading, setExcelLoading] = useState(false);
@@ -33,7 +33,7 @@ export default function AdminDashboard() {
     setExcelLoading(true);
     try {
       const res = await fetch(`${API}/admin/report/students`, {
-        headers: { Authorization: `Bearer ${tok()}` },
+        headers: { Authorization: `Bearer ${getStaffToken()}` },
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
@@ -94,14 +94,25 @@ export default function AdminDashboard() {
               <h2 className="font-bold text-foreground mb-4">توزيع الطلاب حسب المرحلة</h2>
               <div className="space-y-3">
                 {summaryList.map((row: any) => {
-                  const cfg = Object.values(GRADE_CONFIG).find((c: any) => c.gradeLevel === row.gradeLevel) as any;
+                  const cfg = GRADE_CONFIG[row.gradeLevel as string];
+                  const total = Number(row.count ?? 0);
+                  const paid = Number(row.paidCount ?? 0);
+                  const free = total - paid;
+                  if (total === 0) return null;
                   return (
                     <div key={row.gradeLevel} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                      <span className="text-sm text-foreground">{cfg?.labelAr ?? row.gradeLevel}</span>
+                      <div className="flex items-center gap-2">
+                        {cfg?.logo && (
+                          <img src={cfg.logo} alt="" className="w-5 h-5 object-contain" />
+                        )}
+                        <span className="text-sm font-medium text-foreground">
+                          {cfg?.labelAr ?? row.gradeLevel}
+                        </span>
+                      </div>
                       <div className="flex items-center gap-4">
-                        <span className="text-xs text-green-400">{row.paidCount ?? 0} مدفوع</span>
-                        <span className="text-xs text-muted-foreground">{row.freeCount ?? 0} مجاني</span>
-                        <span className="text-sm font-bold text-foreground">{row.total ?? 0}</span>
+                        <span className="text-xs text-green-400">{paid} مدفوع</span>
+                        <span className="text-xs text-muted-foreground">{free} مجاني</span>
+                        <span className="text-sm font-bold text-foreground">{total}</span>
                       </div>
                     </div>
                   );

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Layout } from "@/components/Layout";
 import { GRADE_CONFIG, ADMIN_THEME, getApiBaseUrl } from "@/lib/utils";
@@ -17,7 +17,6 @@ export default function Profile() {
   const grade = user?.gradeLevel || "grade9";
   const theme = GRADE_CONFIG[grade] ?? ADMIN_THEME;
   const token = localStorage.getItem("najm_token");
-  const certRef = useRef<HTMLDivElement>(null);
   const [certLoading, setCertLoading] = useState<number | null>(null);
 
   const { data: myRank } = useGetMyRank({ query: { queryKey: getGetMyRankQueryKey(), enabled: !!user } });
@@ -77,53 +76,64 @@ export default function Profile() {
   const buildCertHtml = useCallback((milestoneTitle: string, milestoneType: "unit_complete" | "subject_complete") => {
     const isSubject = milestoneType === "subject_complete";
     const achievementLabel = isSubject ? "أتم دراسة مادة" : "أتقن وحدة";
+
+    const accentColor = grade === "grade9" ? "#F4C430" : theme.primary;
+    const origin = window.location.origin;
+    const mainLogoSrc = `${origin}/images/logo-main.png`;
+    const trackLogoSrc = `${origin}${theme.logo}`;
+
+    const bgGradient = `linear-gradient(135deg, ${theme.surface ?? "#fefce8"} 0%, ${theme.surfaceLow ?? "#fffbeb"} 60%, #ecfdf5 100%)`;
+    const nameBorderColor = grade === "grade9" ? "#10b981" : accentColor;
+    const titleBadgeBg = grade === "grade9" ? "#eff6ff" : `${accentColor}18`;
+    const titleBadgeColor = grade === "grade9" ? "#1e40af" : accentColor;
+
     return `
       <div style="
         width:1122px;height:794px;
-        background:linear-gradient(135deg,#fefce8 0%,#fffbeb 40%,#ecfdf5 100%);
-        border:12px solid #f59e0b;
+        background:${bgGradient};
+        border:14px solid ${accentColor};
         font-family:'IBM Plex Sans Arabic','Segoe UI',Arial,sans-serif;
         direction:rtl;text-align:center;
         display:flex;flex-direction:column;align-items:center;justify-content:center;
         padding:60px;position:relative;box-sizing:border-box;
       ">
-        <div style="position:absolute;top:20px;right:20px;width:60px;height:60px;border:4px solid #f59e0b;border-radius:4px;"></div>
-        <div style="position:absolute;top:20px;left:20px;width:60px;height:60px;border:4px solid #f59e0b;border-radius:4px;"></div>
-        <div style="position:absolute;bottom:20px;right:20px;width:60px;height:60px;border:4px solid #f59e0b;border-radius:4px;"></div>
-        <div style="position:absolute;bottom:20px;left:20px;width:60px;height:60px;border:4px solid #f59e0b;border-radius:4px;"></div>
+        <div style="position:absolute;top:18px;right:18px;width:64px;height:64px;border:4px solid ${accentColor};border-radius:5px;"></div>
+        <div style="position:absolute;top:18px;left:18px;width:64px;height:64px;border:4px solid ${accentColor};border-radius:5px;"></div>
+        <div style="position:absolute;bottom:18px;right:18px;width:64px;height:64px;border:4px solid ${accentColor};border-radius:5px;"></div>
+        <div style="position:absolute;bottom:18px;left:18px;width:64px;height:64px;border:4px solid ${accentColor};border-radius:5px;"></div>
 
-        <img src="/najm-logo.png" crossorigin="anonymous"
-          style="width:90px;height:90px;object-fit:contain;margin-bottom:10px;" />
+        <img src="${mainLogoSrc}" crossorigin="anonymous"
+          style="width:108px;height:108px;object-fit:contain;margin-bottom:10px;" />
 
-        <h1 style="font-size:38px;font-weight:900;color:#1e293b;margin:0 0 6px;letter-spacing:1px;">
+        <h1 style="font-size:38px;font-weight:900;color:#1e293b;margin:0 0 6px;letter-spacing:1px;white-space:nowrap;">
           نظام نجم التعليمي
         </h1>
-        <div style="width:200px;height:4px;background:linear-gradient(90deg,#f59e0b,#10b981);border-radius:2px;margin:0 auto 20px;"></div>
+        <div style="width:220px;height:4px;background:linear-gradient(90deg,${accentColor},#10b981);border-radius:2px;margin:0 auto 18px;"></div>
 
-        <h2 style="font-size:${isSubject ? "30" : "28"}px;font-weight:700;color:#f59e0b;margin:0 0 28px;">
-          ${isSubject ? "شهادة إتمام مادة دراسية" : "شهادة إتقان وحدة"}
+        <h2 style="font-size:${isSubject ? "30" : "28"}px;font-weight:700;color:${accentColor};margin:0 0 24px;white-space:nowrap;">
+          ${isSubject ? "شهادة إتمام مادة دراسية" : "شهادة إتقان وحدة دراسية"}
         </h2>
 
         <p style="font-size:20px;color:#334155;line-height:1.8;margin:0 auto 8px;">
           تشهد إدارة نظام نجم التعليمي بأن البطل/ة
         </p>
-        <p style="font-size:34px;font-weight:900;color:#0f172a;margin:0 0 10px;border-bottom:3px solid #10b981;padding-bottom:8px;display:inline-block;">
+        <p style="font-size:34px;font-weight:900;color:#0f172a;margin:0 0 10px;border-bottom:3px solid ${nameBorderColor};padding-bottom:8px;display:inline-block;">
           ${user?.fullName ?? ""}
         </p>
-        <p style="font-size:20px;color:#475569;margin:10px 0 6px;">
+        <p style="font-size:19px;color:#475569;margin:10px 0 6px;">
           ${achievementLabel}
         </p>
-        <p style="font-size:26px;font-weight:800;color:#1e40af;margin:0 0 32px;padding:8px 28px;background:#eff6ff;border-radius:10px;display:inline-block;">
+        <p style="font-size:26px;font-weight:800;color:${titleBadgeColor};margin:0 0 28px;padding:8px 28px;background:${titleBadgeBg};border-radius:10px;display:inline-block;">
           ${milestoneTitle}
         </p>
 
-        <div style="display:flex;justify-content:space-between;width:100%;max-width:800px;align-items:flex-end;">
+        <div style="display:flex;justify-content:space-between;width:100%;max-width:820px;align-items:flex-end;">
           <div style="text-align:center;">
             <p style="font-size:14px;color:#64748b;margin:0;">التاريخ</p>
             <p style="font-size:16px;font-weight:700;color:#1e293b;margin:4px 0 0;">${certDate}</p>
           </div>
-          <img src="/najm-logo.png" crossorigin="anonymous"
-            style="width:72px;height:72px;object-fit:contain;border-radius:50%;border:3px solid #f59e0b;padding:4px;background:#fff;" />
+          <img src="${trackLogoSrc}" crossorigin="anonymous"
+            style="width:86px;height:86px;object-fit:contain;border-radius:50%;border:3px solid ${accentColor};padding:5px;background:#fff;" />
           <div style="text-align:center;">
             <p style="font-size:14px;color:#64748b;margin:0;">التوقيع</p>
             <p style="font-size:16px;font-weight:700;color:#1e293b;margin:4px 0 0;">الأستاذ عبد الله نجم</p>
@@ -131,7 +141,7 @@ export default function Profile() {
         </div>
       </div>
     `;
-  }, [user, certDate]);
+  }, [user, certDate, grade, theme]);
 
   const handleDownloadCert = async (milestone: any) => {
     setCertLoading(milestone.id);
@@ -147,15 +157,17 @@ export default function Profile() {
       wrapper.innerHTML = buildCertHtml(milestone.title, milestone.type);
       document.body.appendChild(wrapper);
 
-      await new Promise(r => setTimeout(r, 200));
+      await document.fonts.ready;
+      await new Promise(r => setTimeout(r, 250));
 
       const certEl = wrapper.firstElementChild as HTMLElement;
       const canvas = await html2canvas(certEl, {
         scale: 2,
         useCORS: true,
-        allowTaint: true,
+        allowTaint: false,
         backgroundColor: "#ffffff",
         logging: false,
+        imageTimeout: 8000,
       });
 
       document.body.removeChild(wrapper);
@@ -248,7 +260,7 @@ export default function Profile() {
               <div>
                 <p className="text-sm font-semibold text-foreground">لا توجد شهادات بعد</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  أكمل جميع دروس وحدة وادتياز اختباراتها بنتيجة 70%+ للحصول على أول شهادة
+                  أكمل جميع دروس وحدة واجتياز اختباراتها بنتيجة 70%+ للحصول على أول شهادة
                 </p>
               </div>
             </div>
@@ -265,14 +277,16 @@ export default function Profile() {
                     key={m.id}
                     className="flex items-center justify-between gap-3 p-3 rounded-xl border"
                     style={{
-                      background: isSubject ? "linear-gradient(135deg,#eff6ff,#ecfdf5)" : "linear-gradient(135deg,#fefce8,#f0fdf4)",
-                      borderColor: isSubject ? "#93c5fd" : "#fbbf24",
+                      background: isSubject
+                        ? "linear-gradient(135deg,#eff6ff,#ecfdf5)"
+                        : `linear-gradient(135deg,${theme.surfaceLow ?? "#fefce8"},#f0fdf4)`,
+                      borderColor: isSubject ? "#93c5fd" : theme.primary,
                     }}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div
                         className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-lg"
-                        style={{ background: isSubject ? "#dbeafe" : "#fef3c7" }}
+                        style={{ background: isSubject ? "#dbeafe" : theme.primaryLight }}
                       >
                         {isSubject ? "🏆" : "📘"}
                       </div>
@@ -287,7 +301,7 @@ export default function Profile() {
                       onClick={() => handleDownloadCert(m)}
                       disabled={loading}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white flex-shrink-0 transition-all hover:opacity-90 disabled:opacity-60"
-                      style={{ background: isSubject ? "#3b82f6" : "#f59e0b" }}
+                      style={{ background: isSubject ? "#3b82f6" : theme.primary }}
                     >
                       {loading
                         ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
