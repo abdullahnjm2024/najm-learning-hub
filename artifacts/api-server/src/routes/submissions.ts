@@ -52,23 +52,31 @@ async function pushToStaff(roles: ("teacher" | "supervisor" | "super_admin")[], 
 }
 
 async function pushToStudent(userId: number, title: string, body: string, url: string) {
-  if (!process.env.VAPID_PUBLIC_KEY) return;
+  if (!process.env.VAPID_PUBLIC_KEY) {
+    console.warn("[push] VAPID not configured — skipping student push");
+    return;
+  }
   try {
     const subs = await db.select().from(pushSubscriptionsTable)
       .where(eq(pushSubscriptionsTable.userId, userId));
+    console.log(`[push] student ${userId}: found ${subs.length} subscription(s)`);
     if (subs.length === 0) return;
 
     const payload = JSON.stringify({ title, body, icon: "/favicon.svg", data: { url } });
-    await Promise.allSettled(
+    const results = await Promise.allSettled(
       subs.map(sub =>
         firePush(sub.endpoint, sub.p256dhKey, sub.authKey, payload).catch(async (err: any) => {
+          console.error(`[push] delivery failed (${err.statusCode}):`, err.message);
           if (err.statusCode === 410 || err.statusCode === 404) {
             await db.delete(pushSubscriptionsTable).where(eq(pushSubscriptionsTable.endpoint, sub.endpoint));
           }
         })
       )
     );
-  } catch { }
+    console.log(`[push] student ${userId}: sent — results:`, results.map(r => r.status));
+  } catch (err) {
+    console.error("[push] pushToStudent error:", err);
+  }
 }
 
 router.post("/submissions", authenticate, async (req: AuthenticatedRequest, res): Promise<void> => {
@@ -179,11 +187,12 @@ router.put("/admin/submissions/:id/reply", authenticateStaff, async (req: StaffA
     const [lesson] = await db.select({ titleAr: lessonsTable.titleAr })
       .from(lessonsTable).where(eq(lessonsTable.id, updated.lessonId)).limit(1);
     const lessonTitle = lesson?.titleAr ?? "الدرس";
+    const replyText = (adminReply?.trim()) || "";
 
     await pushToStudent(
       updated.studentId,
       "رد جديد من الأستاذ عبد الله 👨‍🏫",
-      `الأستاذ عبد الله رد على استفسارك في درس ${lessonTitle}`,
+      `درس: ${lessonTitle}\nالرد: ${replyText}`,
       `/lessons/${updated.lessonId}`
     );
   } catch (err) {
