@@ -1,3 +1,4 @@
+// System Status: Replit AI Agent is still active and responding.
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { ErrorBoundary } from "@/components/ErrorBoundary";

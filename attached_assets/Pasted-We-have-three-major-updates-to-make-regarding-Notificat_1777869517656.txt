@@ -1,0 +1,15 @@
+We have three major updates to make regarding Notifications (including OS-level Push) and the PWA Install Prompt.
+
+Feature 1: Strict Point-to-Point Notifications with OS Push Integration.
+Currently, submission notifications are broadcasting globally. We must fix this and also trigger real Web Push notifications so they arrive on the phone instantly.
+- In `routes/submissions.ts` (POST /api/submissions): Insert the DB notification as a direct message (e.g., `grade_level: null`). Insert a row into `user_notifications` ONLY for the admin IDs. THEN, query the `push_subscriptions` table for those admins and use your existing web-push utility to send a push notification containing the title, body, and payload `data: { url: '/admin/submissions' }`.
+- In `routes/submissions.ts` (PUT /api/admin/submissions/:id/reply): Insert the DB notification similarly, and link it ONLY to `submission.student_id` in `user_notifications`. THEN, query the `push_subscriptions` table for that specific student and send a web-push notification containing the title, body, and payload `data: { url: '/lessons/' + lesson_id }`.
+
+Feature 2: Clickable In-App & OS Notifications.
+- In `src/pages/notifications.tsx`: Ensure the notification cards are clickable. If a notification has a `link` property, clicking it should navigate the user to that route using `wouter`'s `useLocation`.
+- In the Service Worker file (`src/sw.ts` or `public/sw.js`): Ensure there is an event listener for `notificationclick` that reads `event.notification.data.url` and opens that specific URL in the browser window, so tapping the notification on the phone opens the exact lesson or reply.
+
+Feature 3: PWA Install Prompt Location.
+Move the PWA Install Prompt component out of the authenticated layout. It MUST be rendered at the absolute root level (e.g., in `src/App.tsx` or `main.tsx`) so that it appears immediately to unauthenticated users opening the site for the very first time, before they even log in.
+
+Please implement these fixes carefully.

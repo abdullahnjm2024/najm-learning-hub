@@ -19,7 +19,7 @@ async function sendPushToUsers(userIds: number[], title: string, body: string, l
   if (!process.env.VAPID_PUBLIC_KEY) return;
   try {
     const subs = await db.select().from(pushSubscriptionsTable).where(inArray(pushSubscriptionsTable.userId, userIds));
-    const payload = JSON.stringify({ title, body, icon: "/favicon.svg", data: { link } });
+    const payload = JSON.stringify({ title, body, icon: "/favicon.svg", data: { url: link } });
     await Promise.allSettled(
       subs.map(sub =>
         webpush.sendNotification(

@@ -120,7 +120,7 @@ function OnboardingModal({ theme, onDone }: { theme: typeof ADMIN_THEME; onDone:
 
 type BannerMode = "install" | "ios" | null;
 
-function InstallBanner() {
+export function InstallBanner() {
   const deferredPrompt = useRef<any>(null);
   const [mode, setMode] = useState<BannerMode>(null);
 
@@ -367,8 +367,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {showOnboarding && (
         <OnboardingModal theme={theme} onDone={() => setShowOnboarding(false)} />
       )}
-
-      <InstallBanner />
 
       {/* Desktop Sidebar — Fixed right */}
       <aside className="hidden lg:flex flex-col w-64 bg-sidebar fixed right-0 top-0 h-full z-30 shadow-tonal">

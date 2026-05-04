@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { StaffAuthProvider, useStaffAuth } from "@/contexts/StaffAuthContext";
+import { InstallBanner } from "@/components/Layout";
 import { Loader2, Star } from "lucide-react";
 
 import Login from "@/pages/login";
@@ -226,6 +227,7 @@ function App() {
           </AuthProvider>
         </StaffAuthProvider>
         <Toaster />
+        <InstallBanner />
       </TooltipProvider>
     </QueryClientProvider>
   );
