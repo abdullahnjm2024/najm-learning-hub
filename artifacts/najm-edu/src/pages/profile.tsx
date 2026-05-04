@@ -92,51 +92,71 @@ export default function Profile() {
         width:1122px;height:794px;
         background:${bgGradient};
         border:14px solid ${accentColor};
-        font-family:'IBM Plex Sans Arabic','Segoe UI',Arial,sans-serif;
+        font-family:Arial,Tahoma,'Segoe UI',sans-serif;
         direction:rtl;text-align:center;
         display:flex;flex-direction:column;align-items:center;justify-content:center;
-        padding:60px;position:relative;box-sizing:border-box;
+        padding:48px 60px;position:relative;box-sizing:border-box;gap:0;
       ">
+        <!-- Corner brackets -->
         <div style="position:absolute;top:18px;right:18px;width:64px;height:64px;border:4px solid ${accentColor};border-radius:5px;"></div>
         <div style="position:absolute;top:18px;left:18px;width:64px;height:64px;border:4px solid ${accentColor};border-radius:5px;"></div>
         <div style="position:absolute;bottom:18px;right:18px;width:64px;height:64px;border:4px solid ${accentColor};border-radius:5px;"></div>
         <div style="position:absolute;bottom:18px;left:18px;width:64px;height:64px;border:4px solid ${accentColor};border-radius:5px;"></div>
 
-        <img src="${mainLogoSrc}" crossorigin="anonymous"
-          style="width:108px;height:108px;object-fit:contain;margin-bottom:10px;" />
+        <!-- ── 3-COLUMN HEADER ── -->
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:18px;">
+          <!-- Left: main platform logo -->
+          <div style="flex:0 0 220px;display:flex;align-items:center;justify-content:flex-start;">
+            <img src="${mainLogoSrc}" crossorigin="anonymous"
+              style="width:220px;height:220px;object-fit:contain;" />
+          </div>
 
-        <h1 style="font-size:38px;font-weight:900;color:#1e293b;margin:0 0 6px;letter-spacing:normal;white-space:nowrap;font-family:Arial,Tahoma,'Segoe UI',sans-serif;">
-          نظام نجم التعليمي
-        </h1>
-        <div style="width:220px;height:4px;background:linear-gradient(90deg,${accentColor},#10b981);border-radius:2px;margin:0 auto 18px;"></div>
+          <!-- Center: titles -->
+          <div style="flex:1;text-align:center;padding:0 16px;">
+            <h1 style="font-size:40px;font-weight:900;color:#1e293b;margin:0 0 8px;letter-spacing:normal;white-space:nowrap;">
+              نظام نجم التعليمي
+            </h1>
+            <div style="width:240px;height:4px;background:linear-gradient(90deg,${accentColor},#10b981);border-radius:2px;margin:0 auto 12px;"></div>
+            <h2 style="font-size:${isSubject ? "28" : "26"}px;font-weight:700;color:${accentColor};margin:0;white-space:nowrap;">
+              ${isSubject ? "شهادة إتمام مادة دراسية" : "شهادة إتقان وحدة دراسية"}
+            </h2>
+          </div>
 
-        <h2 style="font-size:${isSubject ? "30" : "28"}px;font-weight:700;color:${accentColor};margin:0 0 24px;white-space:nowrap;">
-          ${isSubject ? "شهادة إتمام مادة دراسية" : "شهادة إتقان وحدة دراسية"}
-        </h2>
+          <!-- Right: track-specific logo -->
+          <div style="flex:0 0 180px;display:flex;align-items:center;justify-content:flex-end;">
+            <img src="${trackLogoSrc}" crossorigin="anonymous"
+              style="width:180px;height:180px;object-fit:contain;" />
+          </div>
+        </div>
 
-        <p style="font-size:20px;color:#334155;line-height:1.8;margin:0 auto 8px;">
+        <!-- ── DIVIDER ── -->
+        <div style="width:100%;height:2px;background:linear-gradient(90deg,transparent,${accentColor},transparent);margin-bottom:18px;"></div>
+
+        <!-- ── BODY ── -->
+        <p style="font-size:20px;color:#334155;line-height:1.6;margin:0 0 6px;">
           تشهد إدارة نظام نجم التعليمي بأن البطل/ة
         </p>
-        <p style="font-size:34px;font-weight:900;color:#0f172a;margin:0 0 10px;border-bottom:3px solid ${nameBorderColor};padding-bottom:8px;display:inline-block;">
+        <p style="font-size:34px;font-weight:900;color:#0f172a;margin:0 0 8px;border-bottom:3px solid ${nameBorderColor};padding-bottom:6px;display:inline-block;">
           ${user?.fullName ?? ""}
         </p>
-        <p style="font-size:19px;color:#475569;margin:10px 0 6px;">
+        <p style="font-size:19px;color:#475569;margin:6px 0 6px;">
           ${achievementLabel}
         </p>
-        <p style="font-size:26px;font-weight:800;color:${titleBadgeColor};margin:0 0 28px;padding:8px 28px;background:${titleBadgeBg};border-radius:10px;display:inline-block;">
+        <p style="font-size:26px;font-weight:800;color:${titleBadgeColor};margin:0 0 18px;padding:8px 32px;background:${titleBadgeBg};border-radius:10px;display:inline-block;">
           ${milestoneTitle}
         </p>
 
-        <div style="display:flex;justify-content:space-between;width:100%;max-width:820px;align-items:flex-end;">
+        <!-- ── FOOTER ── -->
+        <div style="display:flex;justify-content:space-around;width:100%;max-width:700px;align-items:flex-end;margin-top:4px;">
           <div style="text-align:center;">
-            <p style="font-size:14px;color:#64748b;margin:0;">التاريخ</p>
-            <p style="font-size:16px;font-weight:700;color:#1e293b;margin:4px 0 0;">${certDate}</p>
+            <div style="width:120px;height:2px;background:${accentColor};margin:0 auto 6px;opacity:0.5;"></div>
+            <p style="font-size:13px;color:#64748b;margin:0;">التاريخ</p>
+            <p style="font-size:15px;font-weight:700;color:#1e293b;margin:3px 0 0;">${certDate}</p>
           </div>
-          <img src="${trackLogoSrc}" crossorigin="anonymous"
-            style="width:86px;height:86px;object-fit:contain;border-radius:50%;border:3px solid ${accentColor};padding:5px;background:#fff;" />
           <div style="text-align:center;">
-            <p style="font-size:14px;color:#64748b;margin:0;">التوقيع</p>
-            <p style="font-size:16px;font-weight:700;color:#1e293b;margin:4px 0 0;">الأستاذ عبد الله نجم</p>
+            <div style="width:120px;height:2px;background:${accentColor};margin:0 auto 6px;opacity:0.5;"></div>
+            <p style="font-size:13px;color:#64748b;margin:0;">التوقيع</p>
+            <p style="font-size:15px;font-weight:700;color:#1e293b;margin:3px 0 0;">الأستاذ عبد الله نجم</p>
           </div>
         </div>
       </div>
@@ -162,12 +182,12 @@ export default function Profile() {
 
       const certEl = wrapper.firstElementChild as HTMLElement;
       const canvas = await html2canvas(certEl, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
         allowTaint: false,
         backgroundColor: "#ffffff",
         logging: false,
-        imageTimeout: 8000,
+        imageTimeout: 10000,
       });
 
       document.body.removeChild(wrapper);
