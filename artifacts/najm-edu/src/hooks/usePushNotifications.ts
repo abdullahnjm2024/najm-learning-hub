@@ -12,11 +12,19 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
-export function usePushNotifications(token: string | null) {
+interface UsePushOptions {
+  subscribeEndpoint?: string;
+  unsubscribeEndpoint?: string;
+}
+
+export function usePushNotifications(token: string | null, options: UsePushOptions = {}) {
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [swRegistration, setSwRegistration] = useState<ServiceWorkerRegistration | null>(null);
+
+  const subscribeEndpoint = options.subscribeEndpoint ?? "/push/subscribe";
+  const unsubscribeEndpoint = options.unsubscribeEndpoint ?? "/push/unsubscribe";
 
   useEffect(() => {
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
@@ -38,16 +46,16 @@ export function usePushNotifications(token: string | null) {
       if (!res.ok) throw new Error("Push not configured");
       const { publicKey } = await res.json();
 
-      const permission = await Notification.requestPermission();
-      setPermission(permission);
-      if (permission !== "granted") return;
+      const perm = await Notification.requestPermission();
+      setPermission(perm);
+      if (perm !== "granted") return;
 
       const subscription = await swRegistration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey),
       });
 
-      await fetch(`${getApiBaseUrl()}/push/subscribe`, {
+      await fetch(`${getApiBaseUrl()}${subscribeEndpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(subscription),
@@ -58,7 +66,7 @@ export function usePushNotifications(token: string | null) {
     } finally {
       setIsLoading(false);
     }
-  }, [swRegistration, token]);
+  }, [swRegistration, token, subscribeEndpoint]);
 
   const unsubscribe = useCallback(async () => {
     if (!swRegistration || !token) return;
@@ -66,7 +74,7 @@ export function usePushNotifications(token: string | null) {
     try {
       const sub = await swRegistration.pushManager.getSubscription();
       if (!sub) return;
-      await fetch(`${getApiBaseUrl()}/push/unsubscribe`, {
+      await fetch(`${getApiBaseUrl()}${unsubscribeEndpoint}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ endpoint: sub.endpoint }),
@@ -77,7 +85,7 @@ export function usePushNotifications(token: string | null) {
     } finally {
       setIsLoading(false);
     }
-  }, [swRegistration, token]);
+  }, [swRegistration, token, unsubscribeEndpoint]);
 
   const isSupported = "serviceWorker" in navigator && "PushManager" in window;
 

@@ -10,4 +10,5 @@ export * from "./lesson_progress";
 export * from "./site_settings";
 export * from "./prizes";
 export * from "./staff";
+export * from "./staff_push_subscriptions";
 export * from "./submissions";

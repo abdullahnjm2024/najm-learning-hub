@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
-import { submissionsTable, usersTable, lessonsTable, notificationsTable, userNotificationsTable, pushSubscriptionsTable } from "@workspace/db";
+import {
+  submissionsTable, usersTable, lessonsTable,
+  pushSubscriptionsTable, staffPushSubscriptionsTable, staffTable,
+} from "@workspace/db";
 import { eq, and, desc, inArray } from "drizzle-orm";
 import { authenticate, authenticateStaff, type AuthenticatedRequest, type StaffAuthenticatedRequest } from "../middlewares/authenticate";
 import webpush from "web-push";
@@ -15,24 +18,57 @@ if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY && process.env
 
 const router = Router();
 
-async function sendPushToUsers(userIds: number[], title: string, body: string, link?: string) {
+async function firePush(endpoint: string, p256dhKey: string, authKey: string, payload: string) {
+  return webpush.sendNotification(
+    { endpoint, keys: { p256dh: p256dhKey, auth: authKey } },
+    payload
+  );
+}
+
+async function pushToStaff(roles: ("teacher" | "supervisor" | "super_admin")[], title: string, body: string, url: string) {
   if (!process.env.VAPID_PUBLIC_KEY) return;
   try {
-    const subs = await db.select().from(pushSubscriptionsTable).where(inArray(pushSubscriptionsTable.userId, userIds));
-    const payload = JSON.stringify({ title, body, icon: "/favicon.svg", data: { url: link } });
+    const staffRows = await db.select({ id: staffTable.id })
+      .from(staffTable)
+      .where(inArray(staffTable.role, roles));
+    if (staffRows.length === 0) return;
+
+    const staffIds = staffRows.map(s => s.id);
+    const subs = await db.select().from(staffPushSubscriptionsTable)
+      .where(inArray(staffPushSubscriptionsTable.staffId, staffIds));
+    if (subs.length === 0) return;
+
+    const payload = JSON.stringify({ title, body, icon: "/favicon.svg", data: { url } });
     await Promise.allSettled(
       subs.map(sub =>
-        webpush.sendNotification(
-          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dhKey, auth: sub.authKey } },
-          payload
-        ).catch(async (err: any) => {
+        firePush(sub.endpoint, sub.p256dhKey, sub.authKey, payload).catch(async (err: any) => {
+          if (err.statusCode === 410 || err.statusCode === 404) {
+            await db.delete(staffPushSubscriptionsTable).where(eq(staffPushSubscriptionsTable.endpoint, sub.endpoint));
+          }
+        })
+      )
+    );
+  } catch { }
+}
+
+async function pushToStudent(userId: number, title: string, body: string, url: string) {
+  if (!process.env.VAPID_PUBLIC_KEY) return;
+  try {
+    const subs = await db.select().from(pushSubscriptionsTable)
+      .where(eq(pushSubscriptionsTable.userId, userId));
+    if (subs.length === 0) return;
+
+    const payload = JSON.stringify({ title, body, icon: "/favicon.svg", data: { url } });
+    await Promise.allSettled(
+      subs.map(sub =>
+        firePush(sub.endpoint, sub.p256dhKey, sub.authKey, payload).catch(async (err: any) => {
           if (err.statusCode === 410 || err.statusCode === 404) {
             await db.delete(pushSubscriptionsTable).where(eq(pushSubscriptionsTable.endpoint, sub.endpoint));
           }
         })
       )
     );
-  } catch { /* push errors are non-fatal */ }
+  } catch { }
 }
 
 router.post("/submissions", authenticate, async (req: AuthenticatedRequest, res): Promise<void> => {
@@ -53,38 +89,20 @@ router.post("/submissions", authenticate, async (req: AuthenticatedRequest, res)
 
   res.status(201).json(submission);
 
-  // ── Notify admin users in background (non-blocking) ──
+  // ── Transient push-only: notify teacher/super_admin staff ──
   try {
     const [lesson] = await db.select({ titleAr: lessonsTable.titleAr })
       .from(lessonsTable).where(eq(lessonsTable.id, Number(lessonId))).limit(1);
-
     const lessonTitle = lesson?.titleAr ?? "الدرس";
-    const notifLink = "/admin/submissions";
 
-    const [notif] = await db.insert(notificationsTable).values({
-      title: "New Student Query",
-      titleAr: "استفسار جديد 📝",
-      body: `Student ${studentName} sent a new query in lesson ${lessonTitle}`,
-      bodyAr: `الطالب ${studentName} أرسل استفساراً جديداً في درس ${lessonTitle}`,
-      type: "announcement",
-      link: notifLink,
-    }).returning();
-
-    const admins = await db.select({ id: usersTable.id })
-      .from(usersTable).where(eq(usersTable.accessRole, "admin" as any));
-
-    if (admins.length > 0) {
-      await db.insert(userNotificationsTable).values(
-        admins.map(a => ({ notificationId: notif.id, userId: a.id, isRead: false }))
-      );
-      await sendPushToUsers(
-        admins.map(a => a.id),
-        "استفسار جديد 📝",
-        `الطالب ${studentName} أرسل استفساراً في درس ${lessonTitle}`
-      );
-    }
+    await pushToStaff(
+      ["teacher", "super_admin"],
+      "استفسار جديد 📝",
+      `الطالب ${studentName} أرسل استفساراً في درس ${lessonTitle}`,
+      "/admin/submissions"
+    );
   } catch (err) {
-    console.error("Submission notify-admin error:", err);
+    console.error("Submission push-admin error:", err);
   }
 });
 
@@ -156,37 +174,20 @@ router.put("/admin/submissions/:id/reply", authenticateStaff, async (req: StaffA
 
   res.json(updated);
 
-  // ── Notify student in background (non-blocking) ──
+  // ── Transient push-only: notify the specific student ──
   try {
     const [lesson] = await db.select({ titleAr: lessonsTable.titleAr })
       .from(lessonsTable).where(eq(lessonsTable.id, updated.lessonId)).limit(1);
-
     const lessonTitle = lesson?.titleAr ?? "الدرس";
-    const notifLink = `/lessons/${updated.lessonId}`;
 
-    const [notif] = await db.insert(notificationsTable).values({
-      title: "New Reply from Teacher",
-      titleAr: "رد جديد من الأستاذ عبد الله 👨‍🏫",
-      body: `Teacher Abdullah replied to your query in lesson ${lessonTitle}`,
-      bodyAr: `الأستاذ عبد الله رد على استفسارك في درس ${lessonTitle}`,
-      type: "announcement",
-      link: notifLink,
-    }).returning();
-
-    await db.insert(userNotificationsTable).values({
-      notificationId: notif.id,
-      userId: updated.studentId,
-      isRead: false,
-    });
-
-    await sendPushToUsers(
-      [updated.studentId],
+    await pushToStudent(
+      updated.studentId,
       "رد جديد من الأستاذ عبد الله 👨‍🏫",
       `الأستاذ عبد الله رد على استفسارك في درس ${lessonTitle}`,
-      notifLink
+      `/lessons/${updated.lessonId}`
     );
   } catch (err) {
-    console.error("Reply notify-student error:", err);
+    console.error("Reply push-student error:", err);
   }
 });
 

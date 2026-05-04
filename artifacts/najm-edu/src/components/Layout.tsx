@@ -4,10 +4,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useStaffAuth } from "@/contexts/StaffAuthContext";
 import { GRADE_CONFIG, ADMIN_THEME } from "@/lib/utils";
 import {
-  Home, BookOpen, Trophy, Bell, User, LogOut, Menu, X,
-  LayoutDashboard, Users, ClipboardList, Send, Layers, Settings, Shield, MessageSquare
+  Home, BookOpen, Trophy, Bell, BellOff, User, LogOut, Menu, X,
+  LayoutDashboard, Users, ClipboardList, Send, Layers, Settings, Shield, MessageSquare, Loader2
 } from "lucide-react";
 import { useListNotifications, getListNotificationsQueryKey } from "@workspace/api-client-react";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const ONBOARDING_KEY = "has_seen_onboarding";
 const INSTALL_HIDE_KEY = "hide_install_prompt";
@@ -221,6 +222,12 @@ export function InstallBanner() {
 export function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout: userLogout, isAdmin } = useAuth();
   const { staff, logout: staffLogout, isSuperAdmin, isTeacher, isSupervisor } = useStaffAuth();
+  const staffToken = typeof window !== "undefined" ? localStorage.getItem("najm_staff_token") : null;
+  const { isSubscribed: staffPushSubscribed, isLoading: staffPushLoading, isSupported: pushSupported,
+          subscribe: staffSubscribe, unsubscribe: staffUnsubscribe } = usePushNotifications(staffToken, {
+    subscribeEndpoint: "/push/subscribe/staff",
+    unsubscribeEndpoint: "/push/unsubscribe/staff",
+  });
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -349,6 +356,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </div>
             )}
           </div>
+        )}
+        {isAdminView && pushSupported && (
+          <button
+            onClick={staffPushSubscribed ? staffUnsubscribe : staffSubscribe}
+            disabled={staffPushLoading}
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all w-full text-sm font-medium mb-1 ${
+              staffPushSubscribed
+                ? "text-green-500 hover:bg-green-500/10"
+                : "text-muted-foreground hover:bg-sidebar-accent"
+            }`}
+            data-testid="btn-staff-push-toggle"
+          >
+            {staffPushLoading
+              ? <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" />
+              : staffPushSubscribed
+              ? <Bell className="w-4 h-4 flex-shrink-0" />
+              : <BellOff className="w-4 h-4 flex-shrink-0" />}
+            <span>{staffPushSubscribed ? "إشعارات مفعّلة ✓" : "تفعيل إشعارات الطلاب"}</span>
+          </button>
         )}
         <button
           onClick={handleLogout}
