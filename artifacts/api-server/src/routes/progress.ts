@@ -1,8 +1,40 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
-import { lessonsTable, lessonProgressTable, unitsTable, examAttemptsTable } from "@workspace/db";
-import { eq, and, asc } from "drizzle-orm";
+import {
+  lessonsTable, lessonProgressTable, unitsTable, subjectsTable,
+  examAttemptsTable, milestonesTable, pushSubscriptionsTable,
+} from "@workspace/db";
+import { eq, and, asc, inArray } from "drizzle-orm";
 import { authenticate, type AuthenticatedRequest } from "../middlewares/authenticate";
+import webpush from "web-push";
+
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY && process.env.VAPID_EMAIL) {
+  webpush.setVapidDetails(
+    process.env.VAPID_EMAIL,
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+}
+
+async function sendPushToStudent(userId: number, title: string, body: string, link: string) {
+  if (!process.env.VAPID_PUBLIC_KEY) return;
+  try {
+    const subs = await db.select().from(pushSubscriptionsTable).where(eq(pushSubscriptionsTable.userId, userId));
+    const payload = JSON.stringify({ title, body, icon: "/najm-logo.png", data: { link } });
+    await Promise.allSettled(
+      subs.map(sub =>
+        webpush.sendNotification(
+          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dhKey, auth: sub.authKey } },
+          payload
+        ).catch(async (err: any) => {
+          if (err.statusCode === 410 || err.statusCode === 404) {
+            await db.delete(pushSubscriptionsTable).where(eq(pushSubscriptionsTable.endpoint, sub.endpoint));
+          }
+        })
+      )
+    );
+  } catch { }
+}
 
 const router = Router();
 
@@ -54,18 +86,125 @@ router.post("/progress/lessons/:lessonId", authenticate, async (req: Authenticat
     .where(and(eq(lessonProgressTable.userId, userId), eq(lessonProgressTable.lessonId, lessonId)))
     .limit(1);
 
+  let progress: any;
+  let alreadyCompleted = false;
+
   if (existing.length > 0) {
-    if (existing[0].isCompleted) { res.json({ alreadyCompleted: true, progress: existing[0] }); return; }
-    const [updated] = await db.update(lessonProgressTable)
-      .set({ isCompleted: true, completedAt: new Date() })
-      .where(and(eq(lessonProgressTable.userId, userId), eq(lessonProgressTable.lessonId, lessonId)))
-      .returning();
-    res.json({ progress: updated });
+    if (existing[0].isCompleted) {
+      alreadyCompleted = true;
+      progress = existing[0];
+    } else {
+      const [updated] = await db.update(lessonProgressTable)
+        .set({ isCompleted: true, completedAt: new Date() })
+        .where(and(eq(lessonProgressTable.userId, userId), eq(lessonProgressTable.lessonId, lessonId)))
+        .returning();
+      progress = updated;
+    }
   } else {
     const [created] = await db.insert(lessonProgressTable)
       .values({ userId, lessonId, isCompleted: true, completedAt: new Date() })
       .returning();
-    res.status(201).json({ progress: created });
+    progress = created;
+  }
+
+  const newMilestones: any[] = [];
+
+  if (!alreadyCompleted && lesson.unitId) {
+    try {
+      const unitId = lesson.unitId;
+
+      const unitLessons = await db.select().from(lessonsTable)
+        .where(eq(lessonsTable.unitId, unitId));
+
+      const unitLessonIds = unitLessons.map(l => l.id);
+
+      const progressRecords = unitLessonIds.length > 0
+        ? await db.select().from(lessonProgressTable)
+            .where(and(eq(lessonProgressTable.userId, userId), inArray(lessonProgressTable.lessonId, unitLessonIds)))
+        : [];
+
+      const completedSet = new Set(progressRecords.filter(p => p.isCompleted).map(p => p.lessonId));
+      const allLessonsDone = unitLessons.every(l => completedSet.has(l.id));
+
+      if (allLessonsDone) {
+        const quizLessons = unitLessons.filter(l => l.quizId);
+        let allQuizzesPassed = true;
+        for (const ql of quizLessons) {
+          const attempts = await db.select().from(examAttemptsTable)
+            .where(and(eq(examAttemptsTable.examId, ql.quizId!), eq(examAttemptsTable.userId, userId)));
+          const passed = attempts.some(a => a.maxScore > 0 && (a.score / a.maxScore) >= 0.70);
+          if (!passed) { allQuizzesPassed = false; break; }
+        }
+
+        if (allQuizzesPassed) {
+          const existingUnit = await db.select().from(milestonesTable)
+            .where(and(
+              eq(milestonesTable.studentId, userId),
+              eq(milestonesTable.type, "unit_complete"),
+              eq(milestonesTable.referenceId, unitId)
+            )).limit(1);
+
+          if (existingUnit.length === 0) {
+            const [unit] = await db.select().from(unitsTable).where(eq(unitsTable.id, unitId)).limit(1);
+            const unitTitle = unit?.titleAr ?? "الوحدة";
+
+            const [unitMilestone] = await db.insert(milestonesTable)
+              .values({ studentId: userId, type: "unit_complete", referenceId: unitId, title: unitTitle })
+              .returning();
+
+            newMilestones.push(unitMilestone);
+
+            sendPushToStudent(userId, "إنجاز جديد! 🎉", `لقد أتقنت وحدة "${unitTitle}"! تفقد شهادتك الجديدة 📜`, "/profile").catch(() => { });
+
+            if (unit?.subjectId) {
+              const subjectId = unit.subjectId;
+              const allUnits = await db.select().from(unitsTable).where(eq(unitsTable.subjectId, subjectId));
+              const unitIds = allUnits.map(u => u.id);
+
+              const unitMilestones = await db.select().from(milestonesTable)
+                .where(and(
+                  eq(milestonesTable.studentId, userId),
+                  eq(milestonesTable.type, "unit_complete"),
+                  inArray(milestonesTable.referenceId, unitIds)
+                ));
+
+              const completedUnitIds = new Set(unitMilestones.map(m => m.referenceId));
+              const allUnitsDone = allUnits.every(u => completedUnitIds.has(u.id));
+
+              if (allUnitsDone) {
+                const existingSubject = await db.select().from(milestonesTable)
+                  .where(and(
+                    eq(milestonesTable.studentId, userId),
+                    eq(milestonesTable.type, "subject_complete"),
+                    eq(milestonesTable.referenceId, subjectId)
+                  )).limit(1);
+
+                if (existingSubject.length === 0) {
+                  const [subject] = await db.select().from(subjectsTable).where(eq(subjectsTable.id, subjectId)).limit(1);
+                  const subjectTitle = subject?.titleAr ?? "المادة";
+
+                  const [subjectMilestone] = await db.insert(milestonesTable)
+                    .values({ studentId: userId, type: "subject_complete", referenceId: subjectId, title: subjectTitle })
+                    .returning();
+
+                  newMilestones.push(subjectMilestone);
+
+                  sendPushToStudent(userId, "إنجاز عظيم! 🏆", `لقد أتقنت مادة "${subjectTitle}" بالكامل! 🎓`, "/profile").catch(() => { });
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch { }
+  }
+
+  if (alreadyCompleted) {
+    res.json({ alreadyCompleted: true, progress, newMilestones: [] });
+  } else if (existing.length > 0) {
+    res.json({ progress, newMilestones });
+  } else {
+    res.status(201).json({ progress, newMilestones });
   }
 });
 

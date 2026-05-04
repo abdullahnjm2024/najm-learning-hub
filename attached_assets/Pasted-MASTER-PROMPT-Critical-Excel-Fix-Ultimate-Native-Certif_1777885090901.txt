@@ -1,0 +1,28 @@
+MASTER PROMPT: Critical Excel Fix & Ultimate Native Certificate Milestones
+
+Execute these tasks in ONE comprehensive pass:
+
+1. BUG FIX: Admin Excel Export Failing
+- The admin clicked "استخراج تقرير الطلاب (Excel)" but received an alert: "تعذر تحميل التقرير، حاول مجدداً".
+- Fix the Backend: Ensure the `xlsx` buffer is generated and sent with headers: `Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` and `Content-Disposition: attachment; filename="report.xlsx"`.
+- Fix the Frontend: Ensure the fetch request handles the response as a `blob`, creates an object URL (`window.URL.createObjectURL`), and triggers a hidden `<a>` click to force download. Log errors in the catch block.
+
+2. FEATURE: Learning Milestones Backend (Drizzle)
+- In `lesson-progress` and `exam-attempts` routes: Check for milestone attainment.
+- Unit Completion: All lessons in a unit marked completed AND all exams in that unit passed (score >= 70%).
+- Subject Completion: All units in a subject completed.
+- Create a new DB table `milestones` to record `studentId`, `type` (unit_complete, subject_complete), `referenceId` (unit_id, subject_id), and `attainedAt`.
+
+3. FEATURE: Automated Notifications
+- When a milestone is attained, trigger:
+  - In-app notification: "لقد أتقنت وحدة [اسم الوحدة]! تفقد شهادتك الجديدة 📜."
+  - Web Push notification linked to the student profile.
+
+4. FEATURE: Student Profile Upgrade
+- In `src/pages/profile.tsx`, add a new section: "شهاداتي وإنجازاتي" (My Certificates).
+- Display a list of attained milestones.
+- Add a dynamic button next to each: "تحميل الشهادة (PDF)".
+
+5. BUG FIX & REDESIGN: Image-Based RTL PDF & Logo
+- FIX: Do NOT render raw Arabic text in jsPDF (it breaks). Instead, use `html2canvas` to capture the beautifully styled HTML certificate DOM element as a high-quality image, then embed THAT image into the `jspdf` output.
+- REDESIGN: In the HTML certificate, replace the generic yellow star with `/najm-logo.png`. Ensure strictly RTL layout, preserving elegant Arabic fonts for the student's name (`fullName`), Unit/Subject title, and "الأستاذ عبد الله نجم".

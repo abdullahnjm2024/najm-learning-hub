@@ -128,11 +128,20 @@ export default function LessonDetail({ params }: Props) {
         method: "POST",
         headers: { Authorization: `Bearer ${tok()}` },
       }).then(r => r.json()),
-    onSuccess: () => {
+    onSuccess: (data) => {
       celebrate();
       qc.invalidateQueries({ queryKey: ["unit-lessons"] });
       qc.invalidateQueries({ queryKey: ["subject-progress"] });
       qc.invalidateQueries({ queryKey: ["lesson-progress-detail", lessonId] });
+      qc.invalidateQueries({ queryKey: ["my-milestones"] });
+      const newMilestones: any[] = data?.newMilestones ?? [];
+      newMilestones.forEach((m: any) => {
+        const isSubject = m.type === "subject_complete";
+        toast({
+          title: isSubject ? "إنجاز عظيم! 🏆" : "إنجاز جديد! 🎉",
+          description: `لقد أتقنت ${isSubject ? "مادة" : "وحدة"} "${m.title}"! تفقد شهادتك في صفحة الملف الشخصي 📜`,
+        });
+      });
     },
   });
 

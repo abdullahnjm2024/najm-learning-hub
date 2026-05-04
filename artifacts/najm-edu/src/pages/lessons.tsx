@@ -5,6 +5,7 @@ import { GRADE_CONFIG, ADMIN_THEME, getApiBaseUrl } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { celebrate } from "@/lib/celebrate";
+import { useToast } from "@/hooks/use-toast";
 import {
   BookOpen, Lock, ChevronLeft, Loader2, PlayCircle, CheckCircle2,
   Headphones, FileText, Image, Link as LinkIcon, Layers, ChevronDown, ChevronUp,
@@ -61,13 +62,24 @@ export default function Lessons() {
 
   const isSubjectPaid = activeSubject ? (isPaid || isPaidForSubject(activeSubject.id)) : false;
 
+  const { toast } = useToast();
+
   const markComplete = useMutation({
     mutationFn: (lessonId: number) =>
       fetch(`${API}/progress/lessons/${lessonId}`, { method: "POST", headers: { Authorization: `Bearer ${tok()}` } }).then(r => r.json()),
-    onSuccess: () => {
+    onSuccess: (data) => {
       celebrate();
       qc.invalidateQueries({ queryKey: ["unit-lessons", expandedUnit] });
       qc.invalidateQueries({ queryKey: ["subject-progress", activeSubject?.id] });
+      qc.invalidateQueries({ queryKey: ["my-milestones"] });
+      const newMilestones: any[] = data?.newMilestones ?? [];
+      newMilestones.forEach((m: any) => {
+        const isSubject = m.type === "subject_complete";
+        toast({
+          title: isSubject ? "إنجاز عظيم! 🏆" : "إنجاز جديد! 🎉",
+          description: `لقد أتقنت ${isSubject ? "مادة" : "وحدة"} "${m.title}"! تفقد شهادتك في صفحة الملف الشخصي 📜`,
+        });
+      });
     },
   });
 
