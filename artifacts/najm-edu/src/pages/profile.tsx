@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Layout } from "@/components/Layout";
 import { GRADE_CONFIG, ADMIN_THEME, getApiBaseUrl } from "@/lib/utils";
 import { useGetMyRank, getGetMyRankQueryKey } from "@workspace/api-client-react";
-import { Star, Trophy, Shield, User, Bell, BellOff, Loader2, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Star, Trophy, Shield, User, Bell, BellOff, Loader2, Lock, Eye, EyeOff, CheckCircle, Award, Download } from "lucide-react";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+
+const API = getApiBaseUrl();
+const tok = () => localStorage.getItem("najm_token") || "";
 
 export default function Profile() {
   const { user, isPaid } = useAuth();
@@ -13,17 +17,28 @@ export default function Profile() {
   const grade = user?.gradeLevel || "grade9";
   const theme = GRADE_CONFIG[grade] ?? ADMIN_THEME;
   const token = localStorage.getItem("najm_token");
+  const certRef = useRef<HTMLDivElement>(null);
+  const [certLoading, setCertLoading] = useState(false);
 
   const { data: myRank } = useGetMyRank({ query: { queryKey: getGetMyRankQueryKey(), enabled: !!user } });
-
   const rankData = myRank as any;
+
+  const { data: attemptsData } = useQuery({
+    queryKey: ["my-attempts"],
+    queryFn: () =>
+      fetch(`${API}/students/me/attempts`, { headers: { Authorization: `Bearer ${tok()}` } })
+        .then(r => r.json()),
+    enabled: !!user,
+  });
+
+  const passedExams: number = (attemptsData as any)?.passed ?? 0;
+  const canDownloadCert = passedExams >= 1;
 
   const { permission, isSubscribed, isLoading: pushLoading, isSupported, subscribe, unsubscribe } = usePushNotifications(token, {
     onError: (msg) => toast({ title: "تعذّر تفعيل الإشعارات", description: msg, variant: "destructive" }),
     onSuccess: () => toast({ title: "تم تفعيل الإشعارات ✓", description: "ستتلقى إشعارات فورية عند رد الأستاذ على استفساراتك." }),
   });
 
-  // Change Password state
   const [pwForm, setPwForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [pwLoading, setPwLoading] = useState(false);
   const [showCurrent, setShowCurrent] = useState(false);
@@ -41,7 +56,7 @@ export default function Profile() {
     }
     setPwLoading(true);
     try {
-      const res = await fetch(`${getApiBaseUrl()}/auth/change-password`, {
+      const res = await fetch(`${API}/auth/change-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ currentPassword: pwForm.currentPassword, newPassword: pwForm.newPassword }),
@@ -60,9 +75,138 @@ export default function Profile() {
     }
   };
 
+  const handleDownloadCert = async () => {
+    if (!certRef.current) return;
+    setCertLoading(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const jsPDF = (await import("jspdf")).default;
+
+      certRef.current.style.display = "block";
+      await new Promise(r => setTimeout(r, 80));
+
+      const canvas = await html2canvas(certRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+
+      certRef.current.style.display = "none";
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+      const w = pdf.internal.pageSize.getWidth();
+      const h = pdf.internal.pageSize.getHeight();
+      pdf.addImage(imgData, "PNG", 0, 0, w, h);
+      pdf.save(`شهادة_${user?.fullName ?? "الطالب"}.pdf`);
+    } catch {
+      toast({ title: "تعذّر تحميل الشهادة", description: "حاول مجدداً", variant: "destructive" });
+    } finally {
+      setCertLoading(false);
+    }
+  };
+
+  const certDate = new Date().toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric" });
+
   return (
     <Layout>
       <div className="max-w-2xl">
+
+        {/* Hidden Certificate DOM element */}
+        <div ref={certRef} style={{ display: "none" }}>
+          <div style={{
+            width: "1122px",
+            height: "794px",
+            background: "linear-gradient(135deg, #fefce8 0%, #fffbeb 40%, #ecfdf5 100%)",
+            border: "12px solid #f59e0b",
+            fontFamily: "'IBM Plex Sans Arabic', 'Segoe UI', Arial, sans-serif",
+            direction: "rtl",
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "60px",
+            position: "relative",
+            boxSizing: "border-box",
+          }}>
+            {/* Decorative corners */}
+            {[{ top: 20, right: 20 }, { top: 20, left: 20 }, { bottom: 20, right: 20 }, { bottom: 20, left: 20 }].map((pos, i) => (
+              <div key={i} style={{
+                position: "absolute", ...pos, width: 60, height: 60,
+                border: "4px solid #f59e0b", borderRadius: 4,
+              }} />
+            ))}
+
+            {/* Star icon */}
+            <div style={{ fontSize: 64, marginBottom: 8 }}>⭐</div>
+
+            {/* Header */}
+            <h1 style={{
+              fontSize: 38, fontWeight: 900, color: "#1e293b",
+              margin: "0 0 6px", letterSpacing: 1,
+            }}>
+              نظام نجم التعليمي
+            </h1>
+            <div style={{
+              width: 200, height: 4, background: "linear-gradient(90deg, #f59e0b, #10b981)",
+              borderRadius: 2, margin: "0 auto 24px",
+            }} />
+
+            {/* Subheader */}
+            <h2 style={{
+              fontSize: 28, fontWeight: 700, color: "#f59e0b",
+              margin: "0 0 32px",
+              textShadow: "0 1px 2px rgba(0,0,0,0.08)",
+            }}>
+              شهادة إتقان وتفوق
+            </h2>
+
+            {/* Body */}
+            <p style={{
+              fontSize: 22, color: "#334155", lineHeight: 1.8,
+              maxWidth: 700, margin: "0 auto 12px",
+            }}>
+              تشهد إدارة نظام نجم أن البطل/ة
+            </p>
+            <p style={{
+              fontSize: 34, fontWeight: 900, color: "#0f172a",
+              margin: "0 0 12px",
+              borderBottom: "3px solid #10b981",
+              paddingBottom: 8,
+              display: "inline-block",
+            }}>
+              {user?.fullName}
+            </p>
+            <p style={{
+              fontSize: 20, color: "#475569", margin: "12px 0 40px",
+            }}>
+              قد اجتاز الاختبارات بنجاح وأثبت تفوقه في {theme.labelAr}
+            </p>
+
+            {/* Footer */}
+            <div style={{
+              display: "flex", justifyContent: "space-between",
+              width: "100%", maxWidth: 800, alignItems: "flex-end",
+            }}>
+              <div style={{ textAlign: "center" }}>
+                <p style={{ fontSize: 16, color: "#64748b", margin: 0 }}>التاريخ</p>
+                <p style={{ fontSize: 18, fontWeight: 700, color: "#1e293b", margin: "4px 0 0" }}>{certDate}</p>
+              </div>
+              <div style={{
+                width: 80, height: 80, borderRadius: "50%",
+                background: "linear-gradient(135deg, #f59e0b, #10b981)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 36,
+              }}>⭐</div>
+              <div style={{ textAlign: "center" }}>
+                <p style={{ fontSize: 16, color: "#64748b", margin: 0 }}>التوقيع</p>
+                <p style={{ fontSize: 18, fontWeight: 700, color: "#1e293b", margin: "4px 0 0" }}>الأستاذ عبد الله نجم</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Profile Header */}
         <div
           className="rounded-2xl p-6 mb-6 relative overflow-hidden"
@@ -111,6 +255,45 @@ export default function Profile() {
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">ترتيبك</p>
           </div>
+        </div>
+
+        {/* Certificate Section */}
+        <div className="bg-card border border-card-border rounded-2xl p-5 mb-4">
+          <h2 className="font-bold text-foreground mb-3 flex items-center gap-2">
+            <Award className="w-4 h-4 text-amber-500" />
+            <span>شهادة التفوق</span>
+          </h2>
+          {canDownloadCert ? (
+            <div className="flex items-center justify-between gap-4 p-3 rounded-xl bg-amber-50 border border-amber-200 dark:bg-amber-900/10 dark:border-amber-800/30">
+              <div>
+                <p className="text-sm font-semibold text-foreground">مؤهّل للشهادة 🎉</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  لقد اجتزت {passedExams} {passedExams === 1 ? "اختباراً" : "اختبارات"} بنجاح
+                </p>
+              </div>
+              <button
+                onClick={handleDownloadCert}
+                disabled={certLoading}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-60 flex-shrink-0"
+                style={{ background: "#f59e0b" }}
+              >
+                {certLoading
+                  ? <Loader2 className="w-4 h-4 animate-spin" />
+                  : <Download className="w-4 h-4" />}
+                <span>تحميل الشهادة</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 border border-border">
+              <Award className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-foreground">الشهادة غير متاحة بعد</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  أكمل اختباراً واحداً على الأقل بدرجة 70% أو أكثر للحصول على شهادتك
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Student Info */}
@@ -162,7 +345,6 @@ export default function Profile() {
             <span>تغيير كلمة المرور</span>
           </h2>
           <form onSubmit={handleChangePassword} className="space-y-3">
-            {/* Current Password */}
             <div>
               <label className="block text-xs font-medium text-muted-foreground mb-1">كلمة المرور الحالية</label>
               <div className="relative">
@@ -182,7 +364,6 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* New Password */}
             <div>
               <label className="block text-xs font-medium text-muted-foreground mb-1">كلمة المرور الجديدة</label>
               <div className="relative">
@@ -202,7 +383,6 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Confirm New Password */}
             <div>
               <label className="block text-xs font-medium text-muted-foreground mb-1">تأكيد كلمة المرور الجديدة</label>
               <div className="relative">

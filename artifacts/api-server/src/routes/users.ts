@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { db } from "@workspace/db";
-import { usersTable } from "@workspace/db";
+import { usersTable, lessonProgressTable, examAttemptsTable } from "@workspace/db";
 import { eq, like, and, or, sql, desc, inArray } from "drizzle-orm";
 import { authenticateStaff, type StaffAuthenticatedRequest } from "../middlewares/authenticate";
 import { UpdateUserStarsBody } from "@workspace/api-zod";
@@ -256,6 +256,34 @@ router.patch("/users/:studentId/stars", authenticateStaff, async (req, res) => {
     return;
   }
   res.json(formatUser(updated));
+});
+
+router.get("/admin/report/students", authenticateStaff, async (_req: StaffAuthenticatedRequest, res): Promise<void> => {
+  const rows = await db.execute(sql`
+    SELECT
+      u.full_name        AS "fullName",
+      u.student_id       AS "studentId",
+      u.grade_level      AS "gradeLevel",
+      u.access_role      AS "accessRole",
+      u.stars_balance    AS "starsBalance",
+      COALESCE(lp.completed, 0)::int   AS "completedLessons",
+      COALESCE(ea.best_pct, 0)::int    AS "bestExamScore"
+    FROM users u
+    LEFT JOIN (
+      SELECT user_id, COUNT(*) FILTER (WHERE is_completed = true) AS completed
+      FROM lesson_progress
+      GROUP BY user_id
+    ) lp ON lp.user_id = u.id
+    LEFT JOIN (
+      SELECT user_id,
+        MAX(CASE WHEN max_score > 0 THEN ROUND(score::numeric / max_score * 100) ELSE 0 END) AS best_pct
+      FROM exam_attempts
+      GROUP BY user_id
+    ) ea ON ea.user_id = u.id
+    WHERE u.access_role IN ('free', 'paid')
+    ORDER BY u.stars_balance DESC, u.full_name
+  `);
+  res.json(rows.rows);
 });
 
 export default router;

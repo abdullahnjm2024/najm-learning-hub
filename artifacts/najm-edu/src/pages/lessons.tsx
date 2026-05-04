@@ -4,6 +4,7 @@ import { Layout } from "@/components/Layout";
 import { GRADE_CONFIG, ADMIN_THEME, getApiBaseUrl } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
+import { celebrate } from "@/lib/celebrate";
 import {
   BookOpen, Lock, ChevronLeft, Loader2, PlayCircle, CheckCircle2,
   Headphones, FileText, Image, Link as LinkIcon, Layers, ChevronDown, ChevronUp,
@@ -64,6 +65,7 @@ export default function Lessons() {
     mutationFn: (lessonId: number) =>
       fetch(`${API}/progress/lessons/${lessonId}`, { method: "POST", headers: { Authorization: `Bearer ${tok()}` } }).then(r => r.json()),
     onSuccess: () => {
+      celebrate();
       qc.invalidateQueries({ queryKey: ["unit-lessons", expandedUnit] });
       qc.invalidateQueries({ queryKey: ["subject-progress", activeSubject?.id] });
     },

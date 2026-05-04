@@ -129,7 +129,7 @@ export default function LessonDetail({ params }: Props) {
         headers: { Authorization: `Bearer ${tok()}` },
       }).then(r => r.json()),
     onSuccess: () => {
-      burstConfetti();
+      celebrate();
       qc.invalidateQueries({ queryKey: ["unit-lessons"] });
       qc.invalidateQueries({ queryKey: ["subject-progress"] });
       qc.invalidateQueries({ queryKey: ["lesson-progress-detail", lessonId] });
