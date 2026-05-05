@@ -24,6 +24,8 @@ export interface AuthenticatedRequest extends Request {
     gradeLevel: string;
     starsBalance: number;
     paidSubjectIds: number[];
+    isSuspended: boolean;
+    suspensionReason: string | null;
   };
   staff?: StaffInfo;
 }
@@ -47,10 +49,6 @@ export async function authenticate(
       res.status(401).json({ error: "unauthorized", message: "User not found" });
       return;
     }
-    if (user.isSuspended) {
-      res.status(403).json({ error: "suspended", message: user.suspensionReason || "حسابك موقوف مؤقتاً. تواصل مع المعلم لرفع الإيقاف." });
-      return;
-    }
     req.user = {
       id: user.id,
       email: user.email,
@@ -59,7 +57,9 @@ export async function authenticate(
       fullName: user.fullName,
       gradeLevel: user.gradeLevel,
       starsBalance: user.starsBalance,
-      paidSubjectIds: user.paidSubjectIds ?? [],
+      paidSubjectIds: (user.paidSubjectIds ?? []).map(Number),
+      isSuspended: user.isSuspended,
+      suspensionReason: user.suspensionReason,
     };
     next();
   } catch {
@@ -132,10 +132,6 @@ export async function authenticateAny(
       const payload = verifyToken(token);
       const [user] = await db.select().from(usersTable).where(eq(usersTable.id, payload.userId)).limit(1);
       if (user) {
-        if (user.isSuspended) {
-          res.status(403).json({ error: "suspended", message: user.suspensionReason || "حسابك موقوف مؤقتاً. تواصل مع المعلم لرفع الإيقاف." });
-          return;
-        }
         req.user = {
           id: user.id,
           email: user.email,
@@ -144,7 +140,9 @@ export async function authenticateAny(
           fullName: user.fullName,
           gradeLevel: user.gradeLevel,
           starsBalance: user.starsBalance,
-          paidSubjectIds: user.paidSubjectIds ?? [],
+          paidSubjectIds: (user.paidSubjectIds ?? []).map(Number),
+          isSuspended: user.isSuspended,
+          suspensionReason: user.suspensionReason,
         };
         next();
         return;

@@ -131,7 +131,7 @@ router.put("/users/:studentId", authenticateStaff, async (req: StaffAuthenticate
   if (phone !== undefined) updateData.phone = phone;
   if (gradeLevel !== undefined) updateData.gradeLevel = gradeLevel as any;
   if (accessRole !== undefined) updateData.accessRole = accessRole as any;
-  if (paidSubjectIds !== undefined) updateData.paidSubjectIds = paidSubjectIds;
+  if (paidSubjectIds !== undefined) updateData.paidSubjectIds = (paidSubjectIds as any[]).map(Number);
   if (isSuspended !== undefined) updateData.isSuspended = isSuspended;
   if (suspensionReason !== undefined) updateData.suspensionReason = suspensionReason;
   if (password && password.length >= 4) {

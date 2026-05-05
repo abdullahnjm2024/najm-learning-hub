@@ -71,6 +71,12 @@ router.get("/lessons/:id", authenticateAny, async (req: AuthenticatedRequest, re
   const [lesson] = await db.select().from(lessonsTable).where(eq(lessonsTable.id, id)).limit(1);
   if (!lesson) { res.status(404).json({ error: "not_found", message: "Lesson not found" }); return; }
 
+  // Suspension check: only students can be suspended
+  if (req.user && !req.staff && req.user.isSuspended) {
+    res.status(403).json({ error: "suspended", message: req.user.suspensionReason || "حسابك موقوف مؤقتاً. تواصل مع المعلم لرفع الإيقاف." });
+    return;
+  }
+
   // Access control: paid lesson requested by a student (req.user set, req.staff not set)
   if (lesson.accessLevel === "paid" && req.user && !req.staff) {
     const paidSubjectIds: number[] = req.user.paidSubjectIds ?? [];

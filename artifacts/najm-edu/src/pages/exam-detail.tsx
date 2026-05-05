@@ -1,27 +1,53 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Layout } from "@/components/Layout";
-import { GRADE_CONFIG, ADMIN_THEME, getGoogleFormEmbedUrl } from "@/lib/utils";
-import {
-  useGetExam, useGetBestAttempt,
-  getGetExamQueryKey, getGetBestAttemptQueryKey,
-} from "@workspace/api-client-react";
+import { GRADE_CONFIG, ADMIN_THEME, getGoogleFormEmbedUrl, getApiBaseUrl } from "@/lib/utils";
+import { useGetBestAttempt, getGetBestAttemptQueryKey } from "@workspace/api-client-react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
+import { useLocation } from "wouter";
 import { Lock, Loader2, ChevronRight, Trophy } from "lucide-react";
+import { SuspensionModal } from "@/components/SuspensionModal";
 
 interface Props { params: { id: string } }
 
+const API = getApiBaseUrl();
+const tok = () => localStorage.getItem("najm_token") || "";
+
+const authFetch = async (url: string) => {
+  const r = await fetch(url, { headers: { Authorization: `Bearer ${tok()}` } });
+  if (r.status === 403) {
+    const body = await r.json().catch(() => ({}));
+    const err: any = new Error(body.message || "forbidden");
+    err.status = 403;
+    err.errorCode = body.error;
+    err.suspensionReason = body.message;
+    throw err;
+  }
+  if (!r.ok) throw new Error("not found");
+  return r.json();
+};
+
 export default function ExamDetail({ params }: Props) {
-  const { isPaid, user } = useAuth();
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const grade = user?.gradeLevel || "grade9";
   const theme = GRADE_CONFIG[grade] ?? ADMIN_THEME;
   const examId = parseInt(params.id);
 
-  const { data: exam, isLoading: examLoading } = useGetExam(examId, {
-    query: { queryKey: getGetExamQueryKey(examId), enabled: !isNaN(examId) }
+  const { data: exam, isLoading: examLoading, error: examError } = useQuery({
+    queryKey: ["exam", examId],
+    queryFn: () => authFetch(`${API}/exams/${examId}`),
+    enabled: !isNaN(examId),
+    retry: false,
   });
+
   const { data: bestAttempt } = useGetBestAttempt(examId, {
     query: { queryKey: getGetBestAttemptQueryKey(examId), enabled: !isNaN(examId), retry: false }
   });
+
+  const suspensionReason = (examError as any)?.errorCode === "suspended"
+    ? (examError as any).suspensionReason as string
+    : null;
 
   if (examLoading) {
     return (
@@ -31,6 +57,10 @@ export default function ExamDetail({ params }: Props) {
         </div>
       </Layout>
     );
+  }
+
+  if (suspensionReason) {
+    return <SuspensionModal reason={suspensionReason} onClose={() => setLocation("/exams")} />;
   }
 
   if (!exam) {
@@ -46,8 +76,10 @@ export default function ExamDetail({ params }: Props) {
 
   const examData = exam as any;
   const bestData = bestAttempt as any;
-  const isLocked = examData.accessLevel === "paid" && !isPaid;
 
+  const paidSubjectCount = (user?.paidSubjectIds ?? []).length;
+  const isAdmin = user?.accessRole === "admin";
+  const isLocked = examData.accessLevel === "paid" && !isAdmin && paidSubjectCount === 0;
 
   return (
     <Layout>
@@ -107,7 +139,6 @@ export default function ExamDetail({ params }: Props) {
           </div>
         )}
 
-        {/* Info: scores are recorded automatically via the exam form webhook */}
         {!isLocked && (
           <div className="bg-card border border-card-border rounded-2xl p-5">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">

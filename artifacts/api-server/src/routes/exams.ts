@@ -39,6 +39,12 @@ router.get("/exams/:id", authenticateAny, async (req: AuthenticatedRequest, res)
     res.status(404).json({ error: "not_found", message: "Exam not found" });
     return;
   }
+  // Suspension check
+  if (req.user && !req.staff && req.user.isSuspended) {
+    res.status(403).json({ error: "suspended", message: req.user.suspensionReason || "حسابك موقوف مؤقتاً. تواصل مع المعلم لرفع الإيقاف." });
+    return;
+  }
+
   if (exam.accessLevel === "paid" && req.user && !req.staff) {
     const paidSubjectIds: number[] = req.user.paidSubjectIds ?? [];
     if (paidSubjectIds.length === 0) {

@@ -9,6 +9,8 @@ import {
   Image as ImageIcon, ClipboardList, CheckCircle2, AlertCircle, ExternalLink,
   X, RefreshCw, Send, MessageSquare, Camera
 } from "lucide-react";
+import { SuspensionModal } from "@/components/SuspensionModal";
+import { useLocation } from "wouter";
 import { Link } from "wouter";
 import { celebrate, burstConfetti } from "@/lib/celebrate";
 
@@ -35,15 +37,24 @@ interface Props { params: { id: string } }
 
 const API = getApiBaseUrl();
 const tok = () => localStorage.getItem("najm_token") || "";
-const authFetch = (url: string) =>
-  fetch(url, { headers: { Authorization: `Bearer ${tok()}` } }).then(r => {
-    if (!r.ok) throw new Error("not found");
-    return r.json();
-  });
+const authFetch = async (url: string) => {
+  const r = await fetch(url, { headers: { Authorization: `Bearer ${tok()}` } });
+  if (r.status === 403) {
+    const body = await r.json().catch(() => ({}));
+    const err: any = new Error(body.message || "forbidden");
+    err.status = 403;
+    err.errorCode = body.error;
+    err.suspensionReason = body.message;
+    throw err;
+  }
+  if (!r.ok) throw new Error("not found");
+  return r.json();
+};
 
 export default function LessonDetail({ params }: Props) {
   const { isPaid, user } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const grade = user?.gradeLevel || "grade9";
   const theme = GRADE_CONFIG[grade] ?? ADMIN_THEME;
   const lessonId = parseInt(params.id);
@@ -74,11 +85,16 @@ export default function LessonDetail({ params }: Props) {
     }
   }, [toast]);
 
-  const { data: lesson, isLoading } = useQuery({
+  const { data: lesson, isLoading, error: lessonError } = useQuery({
     queryKey: ["lesson", lessonId],
     queryFn: () => authFetch(`${API}/lessons/${lessonId}`),
     enabled: !isNaN(lessonId),
+    retry: false,
   });
+
+  const suspensionReason = (lessonError as any)?.errorCode === "suspended"
+    ? (lessonError as any).suspensionReason as string
+    : null;
 
   const lessonData = lesson as any;
   const hasQuiz = !!(lessonData?.quizId);
@@ -227,6 +243,10 @@ export default function LessonDetail({ params }: Props) {
         </div>
       </Layout>
     );
+  }
+
+  if (suspensionReason) {
+    return <SuspensionModal reason={suspensionReason} onClose={() => setLocation("/lessons")} />;
   }
 
   if (!lesson) {

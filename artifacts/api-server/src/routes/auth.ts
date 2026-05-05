@@ -27,6 +27,9 @@ function formatUser(user: typeof usersTable.$inferSelect) {
     gradeLevel: user.gradeLevel,
     accessRole: user.accessRole,
     starsBalance: user.starsBalance,
+    paidSubjectIds: (user.paidSubjectIds ?? []).map(Number),
+    isSuspended: user.isSuspended,
+    suspensionReason: user.suspensionReason,
     createdAt: user.createdAt,
   };
 }
