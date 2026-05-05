@@ -14,6 +14,7 @@ interface User {
   paidSubjectIds: number[];
   isSuspended?: boolean;
   suspensionReason?: string | null;
+  receivedLeaderboardBonus?: boolean;
   createdAt: string;
 }
 

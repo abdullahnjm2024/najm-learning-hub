@@ -50,9 +50,13 @@ function OnboardingModal({ theme, onDone }: { theme: typeof ADMIN_THEME; onDone:
     navigate("/profile");
   };
 
+  const handleRemindLater = () => {
+    onDone();
+  };
+
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4" dir="rtl">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleGo} />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleRemindLater} />
       <div className="relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden bg-white">
         <div
           className="px-6 pt-6 pb-4 flex items-center gap-3"
@@ -101,16 +105,28 @@ function OnboardingModal({ theme, onDone }: { theme: typeof ADMIN_THEME; onDone:
           </div>
         </div>
 
-        <div className="px-6 pb-6">
+        <div className="px-6 pb-6 space-y-2">
           <button
             onClick={handleGo}
             className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all hover:opacity-90 active:scale-[0.98] shadow-lg"
             style={{
               background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)`,
               fontFamily: "'IBM Plex Sans Arabic', sans-serif",
+              color: "#ffffff",
             }}
           >
             انقر هنا لإكمال ملفك الشخصي
+          </button>
+          <button
+            onClick={handleRemindLater}
+            className="w-full py-2.5 rounded-xl text-sm font-medium border transition-all hover:bg-muted/50"
+            style={{
+              borderColor: theme.primary,
+              color: theme.primary,
+              fontFamily: "'IBM Plex Sans Arabic', sans-serif",
+            }}
+          >
+            ذكرني لاحقاً
           </button>
         </div>
       </div>

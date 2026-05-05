@@ -15,7 +15,6 @@ const GRADE_FILTERS = [
   { key: "ielts",       label: "IELTS" },
 ];
 
-const BONUS_STORAGE_KEY = "najm_leaderboard_bonus";
 const API = getApiBaseUrl();
 
 export default function Leaderboard() {
@@ -26,15 +25,13 @@ export default function Leaderboard() {
   const [bonusClaiming, setBonusClaiming] = useState(false);
   const [bonusClaimed, setBonusClaimed] = useState(false);
 
+  // Show bonus popup only when DB says they haven't claimed it yet
   useEffect(() => {
-    if (user && !isAdmin) {
-      const key = `${BONUS_STORAGE_KEY}_${user.studentId}`;
-      if (!localStorage.getItem(key)) {
-        const timer = setTimeout(() => setShowBonus(true), 800);
-        return () => clearTimeout(timer);
-      }
+    if (user && !isAdmin && user.receivedLeaderboardBonus === false) {
+      const timer = setTimeout(() => setShowBonus(true), 800);
+      return () => clearTimeout(timer);
     }
-  }, [user, isAdmin]);
+  }, [user?.receivedLeaderboardBonus, isAdmin]);
 
   const params = gradeFilter ? { gradeLevel: gradeFilter } : {};
   const { data: leaderboard, isLoading } = useGetLeaderboard(
@@ -60,9 +57,8 @@ export default function Leaderboard() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
-        const key = `${BONUS_STORAGE_KEY}_${user.studentId}`;
-        localStorage.setItem(key, "1");
         setBonusClaimed(true);
+        // Refresh user data so receivedLeaderboardBonus becomes true
         qc.invalidateQueries({ queryKey: getGetMeQueryKey() });
         qc.invalidateQueries({ queryKey: getGetMyRankQueryKey() });
         qc.invalidateQueries({ queryKey: getGetLeaderboardQueryKey(params) });
@@ -75,12 +71,8 @@ export default function Leaderboard() {
     }
   };
 
-  const handleDismissBonus = () => {
-    if (!user) return;
-    const key = `${BONUS_STORAGE_KEY}_${user.studentId}`;
-    localStorage.setItem(key, "1");
-    setShowBonus(false);
-  };
+  // "Remind me later" — just close the modal, DB flag stays false so it reappears next visit
+  const handleRemindLater = () => setShowBonus(false);
 
   const getRankIcon = (rank: number) => {
     if (rank === 1) return <Trophy className="w-5 h-5 text-yellow-400 fill-current" />;
@@ -109,7 +101,7 @@ export default function Leaderboard() {
               style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}99)` }}
             >
               <button
-                onClick={handleDismissBonus}
+                onClick={handleRemindLater}
                 className="absolute top-4 left-4 w-7 h-7 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors"
               >
                 <X className="w-4 h-4 text-white" />
@@ -139,29 +131,32 @@ export default function Leaderboard() {
                   <p className="text-green-500 font-bold text-sm">تم إضافة 50 نجمة لرصيدك!</p>
                 </div>
               ) : (
-                <button
-                  onClick={handleClaimBonus}
-                  disabled={bonusClaiming}
-                  className="w-full py-3.5 rounded-xl font-bold text-base text-white flex items-center justify-center gap-2 transition-all hover:opacity-90 active:scale-[0.98] shadow-md disabled:opacity-60"
-                  style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)` }}
-                >
-                  {bonusClaiming
-                    ? <Loader2 className="w-5 h-5 animate-spin" />
-                    : <>
-                        <Star className="w-5 h-5 fill-current" />
-                        <span>احصل على 50 نجمة</span>
-                      </>
-                  }
-                </button>
-              )}
-
-              {!bonusClaimed && (
-                <button
-                  onClick={handleDismissBonus}
-                  className="mt-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  ليس الآن
-                </button>
+                <>
+                  <button
+                    onClick={handleClaimBonus}
+                    disabled={bonusClaiming}
+                    className="w-full py-3.5 rounded-xl font-bold text-base transition-all hover:opacity-90 active:scale-[0.98] shadow-md disabled:opacity-60 flex items-center justify-center gap-2"
+                    style={{
+                      background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)`,
+                      color: "#ffffff",
+                    }}
+                  >
+                    {bonusClaiming
+                      ? <Loader2 className="w-5 h-5 animate-spin" />
+                      : <>
+                          <Star className="w-5 h-5 fill-current" />
+                          <span>احصل على 50 نجمة</span>
+                        </>
+                    }
+                  </button>
+                  <button
+                    onClick={handleRemindLater}
+                    className="mt-3 w-full py-2.5 rounded-xl text-sm font-medium border transition-all hover:bg-muted/50"
+                    style={{ borderColor: theme.primary, color: theme.primary }}
+                  >
+                    ذكرني لاحقاً
+                  </button>
+                </>
               )}
             </div>
           </div>

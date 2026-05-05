@@ -202,8 +202,17 @@ router.patch("/users/:studentId/stars", authenticateStaff, async (req: StaffAuth
 
 router.post("/users/me/leaderboard-bonus", authenticate, async (req: AuthenticatedRequest, res): Promise<void> => {
   const user = req.user!;
+
+  const [dbUser] = await db.select().from(usersTable).where(eq(usersTable.id, user.id)).limit(1);
+  if (!dbUser) { res.status(404).json({ error: "not_found" }); return; }
+
+  if (dbUser.receivedLeaderboardBonus) {
+    res.status(400).json({ error: "already_claimed", message: "لقد حصلت على هذه المكافأة مسبقاً" });
+    return;
+  }
+
   const [updated] = await db.update(usersTable)
-    .set({ adminStars: sql`${usersTable.adminStars} + 50` })
+    .set({ adminStars: sql`${usersTable.adminStars} + 50`, receivedLeaderboardBonus: true })
     .where(eq(usersTable.id, user.id))
     .returning();
 

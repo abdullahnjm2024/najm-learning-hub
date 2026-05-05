@@ -28,6 +28,7 @@ function formatUser(user: typeof usersTable.$inferSelect) {
     accessRole: user.accessRole,
     starsBalance: user.starsBalance + user.adminStars,
     adminStars: user.adminStars,
+    receivedLeaderboardBonus: user.receivedLeaderboardBonus,
     paidSubjectIds: (user.paidSubjectIds ?? []).map(Number),
     isSuspended: user.isSuspended,
     suspensionReason: user.suspensionReason,
