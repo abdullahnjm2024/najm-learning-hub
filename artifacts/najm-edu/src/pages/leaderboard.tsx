@@ -138,7 +138,7 @@ export default function Leaderboard() {
                     className="w-full py-3.5 rounded-xl font-bold text-base transition-all hover:opacity-90 active:scale-[0.98] shadow-md disabled:opacity-60 flex items-center justify-center gap-2"
                     style={{
                       background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)`,
-                      color: "#ffffff",
+                      color: "#000000",
                     }}
                   >
                     {bonusClaiming

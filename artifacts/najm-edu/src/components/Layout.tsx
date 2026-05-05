@@ -108,11 +108,11 @@ function OnboardingModal({ theme, onDone }: { theme: typeof ADMIN_THEME; onDone:
         <div className="px-6 pb-6 space-y-2">
           <button
             onClick={handleGo}
-            className="w-full py-4 rounded-xl font-bold text-lg text-white transition-all hover:opacity-90 active:scale-[0.98] shadow-lg"
+            className="w-full py-4 rounded-xl font-bold text-lg transition-all hover:opacity-90 active:scale-[0.98] shadow-lg"
             style={{
               background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)`,
               fontFamily: "'IBM Plex Sans Arabic', sans-serif",
-              color: "#ffffff",
+              color: "#000000",
             }}
           >
             انقر هنا لإكمال ملفك الشخصي
