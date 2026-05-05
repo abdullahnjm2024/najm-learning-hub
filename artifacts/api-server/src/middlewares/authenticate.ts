@@ -47,6 +47,10 @@ export async function authenticate(
       res.status(401).json({ error: "unauthorized", message: "User not found" });
       return;
     }
+    if (user.isSuspended) {
+      res.status(403).json({ error: "suspended", message: user.suspensionReason || "حسابك موقوف مؤقتاً. تواصل مع المعلم لرفع الإيقاف." });
+      return;
+    }
     req.user = {
       id: user.id,
       email: user.email,
@@ -128,6 +132,10 @@ export async function authenticateAny(
       const payload = verifyToken(token);
       const [user] = await db.select().from(usersTable).where(eq(usersTable.id, payload.userId)).limit(1);
       if (user) {
+        if (user.isSuspended) {
+          res.status(403).json({ error: "suspended", message: user.suspensionReason || "حسابك موقوف مؤقتاً. تواصل مع المعلم لرفع الإيقاف." });
+          return;
+        }
         req.user = {
           id: user.id,
           email: user.email,

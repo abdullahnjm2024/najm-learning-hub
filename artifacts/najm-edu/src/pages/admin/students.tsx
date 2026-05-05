@@ -85,6 +85,10 @@ export default function AdminStudents() {
   const [editSubjectsList, setEditSubjectsList] = useState<any[]>([]);
   const [loadingEditSubjects, setLoadingEditSubjects] = useState(false);
 
+  // Suspension state for the edit modal
+  const [editIsSuspended, setEditIsSuspended] = useState(false);
+  const [editSuspensionReason, setEditSuspensionReason] = useState("");
+
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { login } = useAuth();
@@ -228,6 +232,11 @@ export default function AdminStudents() {
     setEditingStudent(student);
     setEditPaidSubjectIds(student.paidSubjectIds ?? []);
     setEditSubjectsList([]);
+    setEditIsSuspended(student.isSuspended ?? false);
+    setEditSuspensionReason(
+      student.suspensionReason ||
+      "نعتذر أنت متوقف حاليا ودخولك ممنوع تواصل مع المدرس لترفع الحظر"
+    );
     editForm.reset({
       fullName: student.fullName,
       phone: student.phone,
@@ -246,6 +255,8 @@ export default function AdminStudents() {
       gradeLevel: formData.gradeLevel,
       accessRole: formData.accessRole,
       paidSubjectIds: formData.accessRole === "paid" ? editPaidSubjectIds : [],
+      isSuspended: editIsSuspended,
+      suspensionReason: editIsSuspended ? editSuspensionReason : null,
     };
     if (formData.password && formData.password.length >= 4) {
       payload.password = formData.password;
@@ -632,6 +643,37 @@ export default function AdminStudents() {
                   </button>
                 </div>
               </FieldInput>
+
+              {/* ─── Suspension Toggle ─── */}
+              <div className={`border rounded-lg p-3 space-y-3 transition-colors ${editIsSuspended ? "border-red-400 bg-red-50 dark:bg-red-900/10" : "border-border"}`}>
+                <div className="flex items-center justify-between" dir="ltr">
+                  <button
+                    type="button"
+                    onClick={() => setEditIsSuspended(v => !v)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${editIsSuspended ? "bg-red-500" : "bg-muted"}`}
+                    data-testid="toggle-suspend"
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${editIsSuspended ? "translate-x-6" : "translate-x-1"}`} />
+                  </button>
+                  <span className="text-sm font-medium text-foreground" dir="rtl">
+                    {editIsSuspended ? "⛔ الحساب موقوف" : "إيقاف مؤقت للطالب"}
+                  </span>
+                </div>
+                {editIsSuspended && (
+                  <div>
+                    <label className="block text-xs text-muted-foreground mb-1">سبب الإيقاف (سيظهر للطالب)</label>
+                    <textarea
+                      value={editSuspensionReason}
+                      onChange={e => setEditSuspensionReason(e.target.value)}
+                      rows={2}
+                      className={`${inputCls} resize-none text-xs`}
+                      dir="rtl"
+                      data-testid="input-suspension-reason"
+                    />
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setEditingStudent(null)} className="flex-1 py-2.5 bg-muted text-muted-foreground rounded-lg text-sm hover:bg-muted/80">إلغاء</button>
                 <button type="submit" disabled={isSubmitting} className="flex-1 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-60" data-testid="btn-save-edit">

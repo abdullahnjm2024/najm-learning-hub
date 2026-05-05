@@ -60,7 +60,7 @@ export default function Lessons() {
   const { data: lessons = [], isLoading: loadingLessons } = useUnitLessons(expandedUnit);
   const { data: subjectProgress } = useSubjectProgress(activeSubject?.id ?? null);
 
-  const isSubjectPaid = activeSubject ? (isPaid || isPaidForSubject(activeSubject.id)) : false;
+  const isSubjectPaid = activeSubject ? isPaidForSubject(activeSubject.id) : false;
 
   const { toast } = useToast();
 

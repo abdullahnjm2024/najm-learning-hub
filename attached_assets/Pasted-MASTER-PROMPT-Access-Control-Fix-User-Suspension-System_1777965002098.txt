@@ -1,0 +1,19 @@
+MASTER PROMPT: Access Control Fix, User Suspension System, and Full Notification Management
+
+We need to implement three critical management features in ONE comprehensive pass. Do NOT break existing admin token logic and Do NOT break the push notification logic we built yesterday.
+
+1. CRITICAL BUG FIX: Subject-Specific Paid Access
+- Currently, if a user is marked as 'paid', they get access to ALL paid subjects. This is wrong.
+- FIX: In the backend routes (e.g., getting lessons/exams), strictly check the `paidSubjectIds` array. A user should ONLY be able to access premium content if the specific `subject_id` is inside their `paidSubjectIds` array.
+- Update the Frontend UI: Ensure the "Lock" icon correctly shows on subjects/lessons that the user hasn't specifically paid for, even if they have paid for a different subject.
+
+2. NEW FEATURE: User Suspension (Pause Account)
+- DB Schema Update: Add two fields to the `users` table: `is_suspended` (boolean, default false) and `suspension_reason` (text/string).
+- Admin UI: In the Admin Dashboard -> Edit Student modal, add a toggle for "إيقاف مؤقت للطالب" (Suspend Student). If toggled on, show a text input for the reason. Default value for the reason MUST be: "نعتذر أنت متوقف حاليا ودخولك ممنوع تواصل مع المدرس لترفع الحظر".
+- Backend Guard: In the API, check if `user.is_suspended` is true. If true, return a 403 error with the `suspension_reason`.
+- Frontend UI: Intercept this 403 error. If the user is suspended, show them a clear, full-screen message or large toast with their specific `suspension_reason` and redirect them to the home page or a blocked page.
+
+3. NOTIFICATION MANAGEMENT (DB Wipe & Admin UI Overhaul)
+- SAFE Database Wipe: The user's notification feed is cluttered with old test data and bugged global broadcasts. Run a one-time DB query to DELETE all records from the `notifications` table to give them a clean slate. DO NOT touch the push notification code logic, and DO NOT delete anything from `submissions` or `messages` tables.
+- Admin UI Fix (History List): The Admin Notifications page currently only has a "Send" button and shows NO history of sent notifications. FIX THIS. Fetch and display a list/table of all previously sent announcements in the admin view.
+- Delete Button: In this newly built Admin list, add a "Delete" (Trash icon) button that calls a new `DELETE /api/notifications/:id` route, allowing the admin to easily remove any future announcements they send.

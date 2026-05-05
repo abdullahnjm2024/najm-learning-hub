@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp, pgEnum, boolean } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
@@ -25,6 +25,8 @@ export const usersTable = pgTable("users", {
   accessRole: accessRoleEnum("access_role").notNull().default("free"),
   starsBalance: integer("stars_balance").notNull().default(0),
   paidSubjectIds: integer("paid_subject_ids").array().notNull().default(sql`ARRAY[]::integer[]`),
+  isSuspended: boolean("is_suspended").notNull().default(false),
+  suspensionReason: text("suspension_reason"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

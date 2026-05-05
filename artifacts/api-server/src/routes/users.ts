@@ -124,7 +124,7 @@ router.get("/users/:studentId", authenticateStaff, async (req, res): Promise<voi
 });
 
 router.put("/users/:studentId", authenticateStaff, async (req: StaffAuthenticatedRequest, res): Promise<void> => {
-  const { fullName, phone, gradeLevel, accessRole, password, paidSubjectIds } = req.body;
+  const { fullName, phone, gradeLevel, accessRole, password, paidSubjectIds, isSuspended, suspensionReason } = req.body;
 
   const updateData: Partial<typeof usersTable.$inferInsert> = {};
   if (fullName !== undefined) updateData.fullName = fullName;
@@ -132,6 +132,8 @@ router.put("/users/:studentId", authenticateStaff, async (req: StaffAuthenticate
   if (gradeLevel !== undefined) updateData.gradeLevel = gradeLevel as any;
   if (accessRole !== undefined) updateData.accessRole = accessRole as any;
   if (paidSubjectIds !== undefined) updateData.paidSubjectIds = paidSubjectIds;
+  if (isSuspended !== undefined) updateData.isSuspended = isSuspended;
+  if (suspensionReason !== undefined) updateData.suspensionReason = suspensionReason;
   if (password && password.length >= 4) {
     updateData.passwordHash = await hashPassword(password);
   }

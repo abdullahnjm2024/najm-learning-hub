@@ -109,6 +109,23 @@ router.post("/notifications", authenticateStaff, async (req: AuthenticatedReques
   }
 });
 
+router.get("/admin/notifications", authenticateStaff, async (_req, res) => {
+  const all = await db
+    .select()
+    .from(notificationsTable)
+    .orderBy(desc(notificationsTable.createdAt))
+    .limit(200);
+  res.json(all);
+});
+
+router.delete("/notifications/:id", authenticateStaff, async (req, res) => {
+  const id = parseInt(req.params.id as string);
+  if (isNaN(id)) { res.status(400).json({ error: "bad_request" }); return; }
+  await db.delete(userNotificationsTable).where(eq(userNotificationsTable.notificationId, id));
+  await db.delete(notificationsTable).where(eq(notificationsTable.id, id));
+  res.status(204).end();
+});
+
 router.patch("/notifications/:id/read", authenticate, async (req: AuthenticatedRequest, res) => {
   const user = req.user!;
   const id = parseInt(req.params.id as string);

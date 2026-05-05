@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
-import { useListNotifications, useCreateNotification, getListNotificationsQueryKey } from "@workspace/api-client-react";
-import { useQueryClient } from "@tanstack/react-query";
-import { GRADE_CONFIG } from "@/lib/utils";
-import { Bell, Send, Loader2, X, Megaphone, BookOpen, FileText, Star } from "lucide-react";
+import { useCreateNotification } from "@workspace/api-client-react";
+import { GRADE_CONFIG, getApiBaseUrl } from "@/lib/utils";
+import { Bell, Send, Loader2, X, Megaphone, BookOpen, FileText, Star, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,9 +24,19 @@ const TYPE_OPTIONS = [
   { value: "stars_update", labelAr: "تحديث النجوم", icon: Star },
 ];
 
+const staffFetch = (url: string, options: RequestInit = {}) => {
+  const token = localStorage.getItem("najm_staff_token") || localStorage.getItem("najm_token");
+  return fetch(`${getApiBaseUrl()}${url}`, {
+    ...options,
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, ...(options.headers || {}) },
+  });
+};
+
 export default function AdminNotifications() {
   const [showForm, setShowForm] = useState(false);
-  const queryClient = useQueryClient();
+  const [notifList, setNotifList] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -37,17 +46,27 @@ export default function AdminNotifications() {
     return () => window.removeEventListener("keydown", handler);
   }, [showForm]);
 
-  const { data: notifications, isLoading } = useListNotifications({
-    query: { queryKey: getListNotificationsQueryKey(), retry: false }
-  });
+  const fetchNotifs = async () => {
+    setIsLoading(true);
+    try {
+      const res = await staffFetch("/admin/notifications");
+      const data = await res.json();
+      setNotifList(Array.isArray(data) ? data : []);
+    } catch {
+      setNotifList([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchNotifs(); }, []);
+
   const sendNotification = useCreateNotification();
 
   const form = useForm<NotifForm>({
     resolver: zodResolver(notifSchema),
     defaultValues: { titleAr: "", bodyAr: "", type: "announcement", gradeLevel: "all" },
   });
-
-  const notifList = Array.isArray(notifications) ? notifications : [];
 
   const onSubmit = (data: NotifForm) => {
     const payload = {
@@ -62,7 +81,7 @@ export default function AdminNotifications() {
       { data: payload as any },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: getListNotificationsQueryKey() });
+          fetchNotifs();
           form.reset();
           setShowForm(false);
           toast({ title: "تم إرسال الإشعار بنجاح" });
@@ -72,12 +91,29 @@ export default function AdminNotifications() {
     );
   };
 
+  const handleDelete = async (id: number) => {
+    setDeletingId(id);
+    try {
+      const res = await staffFetch(`/notifications/${id}`, { method: "DELETE" });
+      if (res.ok || res.status === 204) {
+        setNotifList(prev => prev.filter(n => n.id !== id));
+        toast({ title: "تم حذف الإشعار" });
+      } else {
+        toast({ title: "خطأ", description: "فشل حذف الإشعار", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "خطأ", description: "تعذّر الاتصال بالخادم", variant: "destructive" });
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <Layout>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-foreground">الإشعارات</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{notifList.length} إشعار</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{notifList.length} إشعار مرسل</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
@@ -108,13 +144,11 @@ export default function AdminNotifications() {
                 <input {...form.register("titleAr")} placeholder="إشعار جديد..." className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring" data-testid="input-title" />
                 {form.formState.errors.titleAr && <p className="text-destructive text-xs mt-1">{form.formState.errors.titleAr.message}</p>}
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1">نص الإشعار</label>
                 <textarea {...form.register("bodyAr")} rows={3} placeholder="محتوى الإشعار..." className="w-full px-3 py-2 bg-input border border-border rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none" data-testid="input-body" />
                 {form.formState.errors.bodyAr && <p className="text-destructive text-xs mt-1">{form.formState.errors.bodyAr.message}</p>}
               </div>
-
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1">النوع</label>
@@ -132,7 +166,6 @@ export default function AdminNotifications() {
                   </select>
                 </div>
               </div>
-
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowForm(false)} className="flex-1 py-2.5 bg-muted text-muted-foreground rounded-lg text-sm hover:bg-muted/80">إلغاء</button>
                 <button type="submit" disabled={sendNotification.isPending} className="flex-1 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-60" data-testid="btn-send">
@@ -170,11 +203,22 @@ export default function AdminNotifications() {
                     <div className="flex items-center gap-2 mt-2">
                       <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{typeCfg.labelAr}</span>
                       {notif.gradeLevel && (
-                        <span className="text-xs text-muted-foreground">{GRADE_CONFIG[notif.gradeLevel]?.labelAr}</span>
+                        <span className="text-xs text-muted-foreground">{GRADE_CONFIG[notif.gradeLevel as keyof typeof GRADE_CONFIG]?.labelAr ?? notif.gradeLevel}</span>
                       )}
                       <span className="text-xs text-muted-foreground mr-auto">{new Date(notif.createdAt).toLocaleDateString("ar")}</span>
                     </div>
                   </div>
+                  <button
+                    onClick={() => handleDelete(notif.id)}
+                    disabled={deletingId === notif.id}
+                    title="حذف الإشعار"
+                    className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all flex-shrink-0"
+                    data-testid={`delete-notif-${notif.id}`}
+                  >
+                    {deletingId === notif.id
+                      ? <Loader2 className="w-4 h-4 animate-spin" />
+                      : <Trash2 className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
             );

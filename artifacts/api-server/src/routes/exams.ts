@@ -4,6 +4,7 @@ import { examsTable } from "@workspace/db";
 import { eq, and, desc } from "drizzle-orm";
 import { authenticateAny, authenticateStaff, type AuthenticatedRequest } from "../middlewares/authenticate";
 import { CreateExamBody } from "@workspace/api-zod";
+import type { Request } from "express";
 
 const router = Router();
 
@@ -27,7 +28,7 @@ router.post("/exams", authenticateStaff, async (req: AuthenticatedRequest, res) 
   res.status(201).json(exam);
 });
 
-router.get("/exams/:id", authenticateAny, async (req, res) => {
+router.get("/exams/:id", authenticateAny, async (req: AuthenticatedRequest, res) => {
   const id = parseInt(req.params.id as string);
   if (isNaN(id)) {
     res.status(400).json({ error: "bad_request", message: "Invalid ID" });
@@ -37,6 +38,13 @@ router.get("/exams/:id", authenticateAny, async (req, res) => {
   if (!exam) {
     res.status(404).json({ error: "not_found", message: "Exam not found" });
     return;
+  }
+  if (exam.accessLevel === "paid" && req.user && !req.staff) {
+    const paidSubjectIds: number[] = req.user.paidSubjectIds ?? [];
+    if (paidSubjectIds.length === 0) {
+      res.status(403).json({ error: "forbidden", message: "هذا الاختبار متاح للمشتركين فقط" });
+      return;
+    }
   }
   res.json(exam);
 });
