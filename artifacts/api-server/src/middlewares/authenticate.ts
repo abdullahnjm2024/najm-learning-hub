@@ -24,6 +24,7 @@ export interface AuthenticatedRequest extends Request {
     gradeLevel: string;
     starsBalance: number;
     paidSubjectIds: number[];
+    adminStars: number;
     isSuspended: boolean;
     suspensionReason: string | null;
   };
@@ -58,6 +59,7 @@ export async function authenticate(
       gradeLevel: user.gradeLevel,
       starsBalance: user.starsBalance,
       paidSubjectIds: (user.paidSubjectIds ?? []).map(Number),
+      adminStars: user.adminStars,
       isSuspended: user.isSuspended,
       suspensionReason: user.suspensionReason,
     };
@@ -141,6 +143,7 @@ export async function authenticateAny(
           gradeLevel: user.gradeLevel,
           starsBalance: user.starsBalance,
           paidSubjectIds: (user.paidSubjectIds ?? []).map(Number),
+          adminStars: user.adminStars,
           isSuspended: user.isSuspended,
           suspensionReason: user.suspensionReason,
         };

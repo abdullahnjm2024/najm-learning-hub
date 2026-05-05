@@ -14,8 +14,8 @@ router.get("/users/me", authenticate, async (req: AuthenticatedRequest, res): Pr
   const user = req.user!;
   const [dbUser] = await db.select().from(usersTable).where(eq(usersTable.id, user.id)).limit(1);
   if (!dbUser) { res.status(404).json({ error: "not_found" }); return; }
-  const { passwordHash, ...safe } = dbUser;
-  res.json(safe);
+  const { passwordHash, starsBalance, adminStars, ...rest } = dbUser;
+  res.json({ ...rest, starsBalance: starsBalance + adminStars, adminStars });
 });
 
 router.patch("/users/me", authenticate, async (req: AuthenticatedRequest, res): Promise<void> => {
@@ -73,7 +73,11 @@ router.get("/users", authenticateStaff, async (req: StaffAuthenticatedRequest, r
   ]);
 
   const total = Number(countResult[0]?.count ?? 0);
-  const users = rows.map(({ passwordHash, ...u }) => u);
+  const users = rows.map(({ passwordHash, starsBalance, adminStars, ...u }) => ({
+    ...u,
+    starsBalance: starsBalance + adminStars,
+    adminStars,
+  }));
 
   res.json({ users, total, page, limit });
 });
@@ -180,20 +184,31 @@ router.patch("/users/:studentId/access", authenticateStaff, async (req: StaffAut
 });
 
 router.patch("/users/:studentId/stars", authenticateStaff, async (req: StaffAuthenticatedRequest, res): Promise<void> => {
-  const starsBalance = parseInt(req.body.starsBalance);
-  if (isNaN(starsBalance) || starsBalance < 0) {
+  const adminStars = parseInt(req.body.adminStars);
+  if (isNaN(adminStars)) {
     res.status(400).json({ error: "bad_request", message: "قيمة النجوم غير صالحة" });
     return;
   }
 
   const [updated] = await db.update(usersTable)
-    .set({ starsBalance })
+    .set({ adminStars })
     .where(eq(usersTable.studentId, req.params.studentId))
     .returning();
 
   if (!updated) { res.status(404).json({ error: "not_found" }); return; }
-  const { passwordHash, ...safe } = updated;
-  res.json(safe);
+  const { passwordHash, starsBalance, adminStars: aStars, ...rest } = updated;
+  res.json({ ...rest, starsBalance: starsBalance + aStars, adminStars: aStars });
+});
+
+router.post("/users/me/leaderboard-bonus", authenticate, async (req: AuthenticatedRequest, res): Promise<void> => {
+  const user = req.user!;
+  const [updated] = await db.update(usersTable)
+    .set({ adminStars: sql`${usersTable.adminStars} + 50` })
+    .where(eq(usersTable.id, user.id))
+    .returning();
+
+  if (!updated) { res.status(404).json({ error: "not_found" }); return; }
+  res.json({ adminStars: updated.adminStars, starsBalance: updated.starsBalance + updated.adminStars, message: "تم إضافة 50 نجمة انطلاقة!" });
 });
 
 router.post("/users/:studentId/impersonate", authenticateStaff, async (req: StaffAuthenticatedRequest, res): Promise<void> => {
@@ -204,8 +219,8 @@ router.post("/users/:studentId/impersonate", authenticateStaff, async (req: Staf
   if (!user) { res.status(404).json({ error: "not_found", message: "الطالب غير موجود" }); return; }
 
   const token = signToken({ userId: user.id, email: user.email, accessRole: user.accessRole });
-  const { passwordHash, ...safe } = user;
-  res.json({ token, user: safe });
+  const { passwordHash, starsBalance, adminStars, ...rest } = user;
+  res.json({ token, user: { ...rest, starsBalance: starsBalance + adminStars, adminStars } });
 });
 
 // ─── Admin: Excel report ───────────────────────────────────────────────────

@@ -181,23 +181,24 @@ export default function AdminStudents() {
     }
   };
 
-  const handleStarsUpdate = (studentId: string) => {
+  const handleStarsUpdate = async (studentId: string) => {
     const val = parseInt(editingStars[studentId] || "0");
-    if (isNaN(val) || val < 0) {
+    if (isNaN(val)) {
       toast({ title: "خطأ", description: "قيمة النجوم غير صالحة", variant: "destructive" });
       return;
     }
-    updateStars.mutate(
-      { studentId, data: { starsBalance: val } },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: getListUsersQueryKey(params) });
-          setEditingStars(prev => { const n = { ...prev }; delete n[studentId]; return n; });
-          toast({ title: "تم التحديث", description: "تم تحديث رصيد النجوم" });
-        },
-        onError: () => toast({ title: "خطأ", description: "فشل تحديث النجوم", variant: "destructive" }),
-      }
-    );
+    try {
+      const res = await authFetch(`/users/${studentId}/stars`, {
+        method: "PATCH",
+        body: JSON.stringify({ adminStars: val }),
+      });
+      if (!res.ok) throw new Error();
+      queryClient.invalidateQueries({ queryKey: getListUsersQueryKey(params) });
+      setEditingStars(prev => { const n = { ...prev }; delete n[studentId]; return n; });
+      toast({ title: "تم التحديث", description: "تم تحديث النجوم الإدارية" });
+    } catch {
+      toast({ title: "خطأ", description: "فشل تحديث النجوم", variant: "destructive" });
+    }
   };
 
   const authFetch = (url: string, options: RequestInit = {}) => {
@@ -411,22 +412,35 @@ export default function AdminStudents() {
                     <Star className="w-4 h-4 fill-current text-primary flex-shrink-0" />
                     {isEditingStars ? (
                       <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          value={editingStars[user.studentId]}
-                          onChange={(e) => setEditingStars(prev => ({ ...prev, [user.studentId]: e.target.value }))}
-                          className="w-20 px-2 py-1 bg-input border border-border rounded text-foreground text-sm ltr text-center focus:outline-none focus:ring-1 focus:ring-ring"
-                          data-testid={`stars-input-${user.studentId}`}
-                        />
+                        <div className="flex flex-col items-center">
+                          <span className="text-[10px] text-muted-foreground leading-none mb-0.5">إدارية</span>
+                          <input
+                            type="number"
+                            value={editingStars[user.studentId]}
+                            onChange={(e) => setEditingStars(prev => ({ ...prev, [user.studentId]: e.target.value }))}
+                            className="w-20 px-2 py-1 bg-input border border-border rounded text-foreground text-sm ltr text-center focus:outline-none focus:ring-1 focus:ring-ring"
+                            data-testid={`stars-input-${user.studentId}`}
+                          />
+                        </div>
                         <button onClick={() => handleStarsUpdate(user.studentId)} className="p-1 rounded bg-green-500/20 text-green-400 hover:bg-green-500/30" data-testid={`stars-save-${user.studentId}`}>
                           <CheckCircle className="w-4 h-4" />
                         </button>
                         <button onClick={() => setEditingStars(prev => { const n = { ...prev }; delete n[user.studentId]; return n; })} className="p-1 rounded bg-muted text-muted-foreground hover:bg-muted/80 text-xs">✕</button>
                       </div>
                     ) : (
-                      <button onClick={() => setEditingStars(prev => ({ ...prev, [user.studentId]: String(user.starsBalance) }))} className="text-sm font-bold text-primary hover:underline" data-testid={`stars-edit-${user.studentId}`}>
-                        {user.starsBalance}
-                      </button>
+                      <div className="flex flex-col items-end">
+                        <button
+                          onClick={() => setEditingStars(prev => ({ ...prev, [user.studentId]: String((user as any).adminStars ?? 0) }))}
+                          className="text-sm font-bold text-primary hover:underline leading-none"
+                          data-testid={`stars-edit-${user.studentId}`}
+                          title="انقر لتعديل النجوم الإدارية"
+                        >
+                          {user.starsBalance}
+                        </button>
+                        {(user as any).adminStars > 0 && (
+                          <span className="text-[10px] text-muted-foreground leading-none mt-0.5">+{(user as any).adminStars} إدارية</span>
+                        )}
+                      </div>
                     )}
                   </div>
 

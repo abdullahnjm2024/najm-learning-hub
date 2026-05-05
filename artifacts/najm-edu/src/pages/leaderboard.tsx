@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Layout } from "@/components/Layout";
-import { GRADE_CONFIG, ADMIN_THEME } from "@/lib/utils";
-import { useGetLeaderboard, useGetMyRank, getGetLeaderboardQueryKey, getGetMyRankQueryKey } from "@workspace/api-client-react";
-import { Star, Trophy, Medal, Loader2 } from "lucide-react";
+import { GRADE_CONFIG, ADMIN_THEME, getApiBaseUrl } from "@/lib/utils";
+import { useGetLeaderboard, useGetMyRank, getGetLeaderboardQueryKey, getGetMyRankQueryKey, getGetMeQueryKey } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Star, Trophy, Medal, Loader2, Rocket, X } from "lucide-react";
 
 const GRADE_FILTERS = [
   { key: "grade9",      label: "الصف التاسع" },
@@ -14,9 +15,26 @@ const GRADE_FILTERS = [
   { key: "ielts",       label: "IELTS" },
 ];
 
+const BONUS_STORAGE_KEY = "najm_leaderboard_bonus";
+const API = getApiBaseUrl();
+
 export default function Leaderboard() {
   const { user, isAdmin } = useAuth();
+  const qc = useQueryClient();
   const [gradeFilter, setGradeFilter] = useState(() => user?.gradeLevel || "grade9");
+  const [showBonus, setShowBonus] = useState(false);
+  const [bonusClaiming, setBonusClaiming] = useState(false);
+  const [bonusClaimed, setBonusClaimed] = useState(false);
+
+  useEffect(() => {
+    if (user && !isAdmin) {
+      const key = `${BONUS_STORAGE_KEY}_${user.studentId}`;
+      if (!localStorage.getItem(key)) {
+        const timer = setTimeout(() => setShowBonus(true), 800);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user, isAdmin]);
 
   const params = gradeFilter ? { gradeLevel: gradeFilter } : {};
   const { data: leaderboard, isLoading } = useGetLeaderboard(
@@ -28,6 +46,41 @@ export default function Leaderboard() {
   const entries = (leaderboard as any)?.entries || [];
   const total = (leaderboard as any)?.total || 0;
   const rankData = myRank as any;
+
+  const grade = user?.gradeLevel || "grade9";
+  const theme = GRADE_CONFIG[grade] ?? ADMIN_THEME;
+
+  const handleClaimBonus = async () => {
+    if (!user) return;
+    setBonusClaiming(true);
+    try {
+      const token = localStorage.getItem("najm_token") || "";
+      const res = await fetch(`${API}/users/me/leaderboard-bonus`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const key = `${BONUS_STORAGE_KEY}_${user.studentId}`;
+        localStorage.setItem(key, "1");
+        setBonusClaimed(true);
+        qc.invalidateQueries({ queryKey: getGetMeQueryKey() });
+        qc.invalidateQueries({ queryKey: getGetMyRankQueryKey() });
+        qc.invalidateQueries({ queryKey: getGetLeaderboardQueryKey(params) });
+        setTimeout(() => setShowBonus(false), 1800);
+      }
+    } catch {
+      // silent fail
+    } finally {
+      setBonusClaiming(false);
+    }
+  };
+
+  const handleDismissBonus = () => {
+    if (!user) return;
+    const key = `${BONUS_STORAGE_KEY}_${user.studentId}`;
+    localStorage.setItem(key, "1");
+    setShowBonus(false);
+  };
 
   const getRankIcon = (rank: number) => {
     if (rank === 1) return <Trophy className="w-5 h-5 text-yellow-400 fill-current" />;
@@ -46,6 +99,75 @@ export default function Leaderboard() {
 
   return (
     <Layout>
+      {/* First-visit Bonus Modal */}
+      {showBonus && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm" dir="rtl">
+          <div className="bg-card border border-card-border rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
+            {/* Header */}
+            <div
+              className="px-6 pt-6 pb-5 relative"
+              style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}99)` }}
+            >
+              <button
+                onClick={handleDismissBonus}
+                className="absolute top-4 left-4 w-7 h-7 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+              >
+                <X className="w-4 h-4 text-white" />
+              </button>
+              <div className="flex flex-col items-center text-center gap-3">
+                <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
+                  <Rocket className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-white leading-snug">
+                  مرحباً بك في لوحة المتصدرين!
+                </h2>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 text-center" dir="rtl">
+              <p className="text-foreground font-semibold text-base leading-relaxed mb-1">
+                شارك المنصة مع أصدقائك
+              </p>
+              <p className="text-muted-foreground text-sm leading-relaxed mb-5">
+                واحصل على <span className="font-bold text-primary">50 نجمة انطلاقة فورية! 🚀</span>
+              </p>
+
+              {bonusClaimed ? (
+                <div className="flex flex-col items-center gap-2 py-2">
+                  <div className="text-3xl">🎉</div>
+                  <p className="text-green-500 font-bold text-sm">تم إضافة 50 نجمة لرصيدك!</p>
+                </div>
+              ) : (
+                <button
+                  onClick={handleClaimBonus}
+                  disabled={bonusClaiming}
+                  className="w-full py-3.5 rounded-xl font-bold text-base text-white flex items-center justify-center gap-2 transition-all hover:opacity-90 active:scale-[0.98] shadow-md disabled:opacity-60"
+                  style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.gradientFrom ?? theme.primary}cc)` }}
+                >
+                  {bonusClaiming
+                    ? <Loader2 className="w-5 h-5 animate-spin" />
+                    : <>
+                        <Star className="w-5 h-5 fill-current" />
+                        <span>احصل على 50 نجمة</span>
+                      </>
+                  }
+                </button>
+              )}
+
+              {!bonusClaimed && (
+                <button
+                  onClick={handleDismissBonus}
+                  className="mt-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  ليس الآن
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mb-6">
         <h1 className="text-xl font-bold text-foreground">لوحة المتصدرين</h1>
         <p className="text-sm text-muted-foreground mt-0.5">ترتيب الطلاب حسب النجوم المكتسبة</p>
@@ -77,7 +199,7 @@ export default function Leaderboard() {
         </div>
       )}
 
-      {/* Grade Filter — admin can switch tracks, students are locked to their own */}
+      {/* Grade Filter */}
       {isAdmin ? (
         <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
           {GRADE_FILTERS.map((f) => {

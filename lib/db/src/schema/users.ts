@@ -24,6 +24,7 @@ export const usersTable = pgTable("users", {
   gradeLevel: gradeLevelEnum("grade_level").notNull(),
   accessRole: accessRoleEnum("access_role").notNull().default("free"),
   starsBalance: integer("stars_balance").notNull().default(0),
+  adminStars: integer("admin_stars").notNull().default(0),
   paidSubjectIds: integer("paid_subject_ids").array().notNull().default(sql`ARRAY[]::integer[]`),
   isSuspended: boolean("is_suspended").notNull().default(false),
   suspensionReason: text("suspension_reason"),

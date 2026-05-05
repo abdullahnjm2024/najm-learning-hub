@@ -6,6 +6,9 @@ import { authenticate, type AuthenticatedRequest } from "../middlewares/authenti
 
 const router = Router();
 
+// Combined star total expression
+const totalStars = sql<number>`(${usersTable.starsBalance} + ${usersTable.adminStars})`;
+
 router.get("/leaderboard", authenticate, async (req: AuthenticatedRequest, res) => {
   const { gradeLevel, limit = "100" } = req.query as Record<string, string>;
   const limitNum = Math.min(500, Math.max(1, parseInt(limit)));
@@ -21,10 +24,10 @@ router.get("/leaderboard", authenticate, async (req: AuthenticatedRequest, res) 
       studentId: usersTable.studentId,
       fullName: usersTable.fullName,
       gradeLevel: usersTable.gradeLevel,
-      starsBalance: usersTable.starsBalance,
+      starsBalance: totalStars,
     }).from(usersTable)
       .where(whereClause)
-      .orderBy(desc(usersTable.starsBalance), usersTable.fullName)
+      .orderBy(desc(totalStars), usersTable.fullName)
       .limit(limitNum),
     db.select({ count: sql<number>`count(*)` }).from(usersTable)
       .where(whereClause),
@@ -35,7 +38,7 @@ router.get("/leaderboard", authenticate, async (req: AuthenticatedRequest, res) 
     studentId: u.studentId,
     fullName: u.fullName,
     gradeLevel: u.gradeLevel,
-    starsBalance: u.starsBalance,
+    starsBalance: Number(u.starsBalance),
     isCurrentUser: u.id === currentUserId,
   }));
 
@@ -51,11 +54,12 @@ router.get("/leaderboard/my-rank", authenticate, async (req: AuthenticatedReques
     return;
   }
 
+  const myTotal = currentUser.starsBalance + currentUser.adminStars;
   const gradeFilter = eq(usersTable.gradeLevel, currentUser.gradeLevel);
 
   const [higherResult] = await db.select({ count: sql<number>`count(*)` })
     .from(usersTable)
-    .where(and(gradeFilter, sql`${usersTable.starsBalance} > ${currentUser.starsBalance}`));
+    .where(and(gradeFilter, sql`(${usersTable.starsBalance} + ${usersTable.adminStars}) > ${myTotal}`));
 
   const [totalResult] = await db.select({ count: sql<number>`count(*)` })
     .from(usersTable)
@@ -68,7 +72,7 @@ router.get("/leaderboard/my-rank", authenticate, async (req: AuthenticatedReques
   res.json({
     rank,
     total,
-    starsBalance: currentUser.starsBalance,
+    starsBalance: myTotal,
     percentile,
   });
 });
